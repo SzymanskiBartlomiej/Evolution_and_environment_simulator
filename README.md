@@ -1,4 +1,4 @@
-# WARIANTY 1,1,2,2
+
 # Projekt nr 1 - generator ewolucyjny
 
 
@@ -8,23 +8,19 @@ Niniejsza treść została zaadaptowana przez Aleksandra Smywińskiego-Pohla na 
 
 Stwórzmy grę! Nie będzie to jednak gra, w którą my gramy. Zamiast tego będzie to świat, który ewoluuje na naszych oczach! Stworzymy środowisko stepów i dżungli ze zwierzętami, które biegają, buszują w zaroślach, jedzą i rozmnażają się. A po kilku milionach lat zobaczymy, że wyewoluowały w różne gatunki!
 
-<img src="zwierzak.jpg" style="zoom: 25%;" />
 
 Świat naszej gry jest dość prosty. Składa się ze zwykłej, prostokątnej połaci podzielonej na kwadratowe pola. Większość świata pokrywają stepy, na których rośnie niewiele roślin stanowiących pożywienie zwierząt. Niektóre rejeony porasta jednak dżungla, gdzie rośliny rosną dużo szybciej. Rośliny będą wyrastały w losowych miejscach, ale ich koncentracja będzie większa w dżungli niż na stepie.
 
-<img src="dzungla.jpg" style="zoom:25%;" />
 
 Nasze zwierzęta, które są roślinożercami, będą przemierzały ten świat w poszukiwaniu pożywienia. Każde zwierzę ma określoną energię, która zmniejsza się co dnia. Znalezienie i zjedzenie rośliny zwiększa poziom energii o pewną wartość.
 
 ## Anatomia zwierzęcia
 
-<img src="zwierzak2.jpg" style="zoom:25%;" />
 
 Musimy śledzić kilka cech każdego zwierzęcia. Po pierwsze, zarówno w przypadku rośliny jak i tych, którzy je zjadają, musimy znać koordynaty `x` i `y`. Wskazują nam one, gdzie dane zwierzę lub roślina jest na mapie.
 
 Musimy także wiedzieć, ile energii ma dane zwierzę. To darwinowska gra o przetrwanie, więc jeśli zwierzątko nie zdoła zdobyć odpowiedniej ilości pożywienia, będzie głodować i zdechnie...  Energia mówi nam o tym, ile dni funkcjonowania zostało jeszcze danemu zwierzątku. Musi ono koniecznie znaleźć więcej jedzenia, zanim jej zapas się wyczerpie.
 
-<img src="kierunki.jpg" style="zoom:25%;" />
 
 Musimy również pamiętać, w którą stronę zwierzę jest zwrócone. Jest to ważne, ponieważ każdego dnia będzie ono poruszać się na mapie w tym właśnie kierunku. Istnieje osiem różnych możliwych pozycji i tyle samo możliwych obrotów. Obrót `0` oznacza, że zwierzę nie zmienia swojej orientacji, obrót `1` oznacza, że zwierzę obraca się o 45°, `2`, o 90°, itd. Przykładowo: jeśli zwierzę było skierowane na północ i obrót wynosi `1`, to zwierzę skierowane jest teraz na północny wschód.
 
