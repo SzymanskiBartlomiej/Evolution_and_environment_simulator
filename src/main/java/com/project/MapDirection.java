@@ -18,25 +18,16 @@ public enum MapDirection {
         return direction;
     }
     public Vector2d toUnitVector(){
-        switch (this){
-            case N:
-                return new Vector2d(0,1);
-            case NE:
-                return new Vector2d(1,1);
-            case E:
-                return new Vector2d(1,0);
-            case SE:
-                return new Vector2d(1,-1);
-            case S:
-                return new Vector2d(0,-1);
-            case SW:
-                return new Vector2d(-1,-1);
-            case W:
-                return new Vector2d(-1,0);
-            case NW:
-                return new Vector2d(-1,1);
-            default:
-                return new Vector2d(0,0);
-        }
+        return switch (this) {
+            case N -> new Vector2d(0, 1);
+            case NE -> new Vector2d(1, 1);
+            case E -> new Vector2d(1, 0);
+            case SE -> new Vector2d(1, -1);
+            case S -> new Vector2d(0, -1);
+            case SW -> new Vector2d(-1, -1);
+            case W -> new Vector2d(-1, 0);
+            case NW -> new Vector2d(-1, 1);
+            default -> new Vector2d(0, 0);
+        };
     }
 }

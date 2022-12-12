@@ -23,7 +23,7 @@ test {
     useJUnitPlatform()
 }
 application {
-    getMainClass().set('com.projct.Main')
+    getMainClass().set('com.project.World')
 }
 
 java {
