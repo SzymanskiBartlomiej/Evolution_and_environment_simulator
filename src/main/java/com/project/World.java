@@ -2,14 +2,13 @@ package com.project;
 
 public class World {
     public static void main(String[] args) {
-        IMapEdge edge = new GlobeMapEdge(new Vector2d(0,0),new Vector2d(2,2));
-        System.out.println(edge.crossedEdge(new Vector2d(3,-1)).toString()); //teścik na działanie edga
-        int[] moves = {0,0,7,0,4};
-        Animal animal = new Animal(new Vector2d(2,2),moves);
-        System.out.println(animal.getPosition().toString() + " "+ animal);
-        for (int move : moves) {
-            animal.move();
-            System.out.println(animal.getPosition().toString() + " " + animal + " " + move);
-        }
-    }
-}
+        MultiMap<Vector2d,Integer> mapa = new MultiMap<>();
+        mapa.put(new Vector2d(1,1),5);
+        mapa.put(new Vector2d(1,1),3);
+        mapa.put(new Vector2d(1,4),2);
+        mapa.put(new Vector2d(1,4),5);
+        mapa.put(new Vector2d(1,1),5);
+        mapa.put(new Vector2d(1,1),5);
+        System.out.println(mapa.get(new Vector2d(1,1)));
+        System.out.println(mapa.values());
+}}

@@ -1,9 +1,9 @@
 package com.project;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 //Multi Mapa jeden klucz wiele wartości możesz dodać metody typu isEmpty itd itp ale nie wiem czy sie przydadza
 public class MultiMap<K,V> {
@@ -35,8 +35,11 @@ public class MultiMap<K,V> {
      * Useful for iterating over every animal.
      * @return Collection view of ArrayLists of the values present in this multimap.
      */
-    public Collection<ArrayList<V>> values() {
-        return map.values();
+    public Collection<V> values() {
+        Collection<V> result = map.values().stream()
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
+        return result;
     }
     /**
      * Returns 2 values highest for a given key, highest defined by comperator function

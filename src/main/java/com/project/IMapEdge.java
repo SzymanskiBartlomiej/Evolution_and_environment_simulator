@@ -10,5 +10,5 @@ public interface IMapEdge {
      *            The position checked for the crossing of an edge
      * @return Vector2d position where animal should move to.
      */
-    Vector2d crossedEdge(Vector2d position);
+    void crossedEdge(Animal animal);
 }

@@ -1,31 +1,32 @@
 package com.project;
 
 public class GlobeMapEdge implements IMapEdge{
-    public final Vector2d lowerLeft;
+    public final Vector2d lowerLeft = new Vector2d(0,0);
     public final Vector2d upperRight;
-    public GlobeMapEdge(Vector2d lowerLeft, Vector2d upperRight){
-        this.lowerLeft = lowerLeft;
+    public GlobeMapEdge(Vector2d upperRight){
         this.upperRight = upperRight;
     }
     // obsługa wyjscia za granice
     @Override
-    public Vector2d crossedEdge(Vector2d position) {
+    public void crossedEdge(Animal animal) {
         int x;
         int y;
-        if(position.x > upperRight.x){
+        if(animal.getPosition().x > upperRight.x){
             x = lowerLeft.x;
-        } else if(position.x < lowerLeft.x){
+        } else if(animal.getPosition().x < lowerLeft.x){
             x = upperRight.x;
         } else {
-            x = position.x;
+            x = animal.getPosition().x;
         }
-        if(position.y > upperRight.y){
+        if(animal.getPosition().y > upperRight.y){
             y = upperRight.y;
-        } else if (position.y < lowerLeft.y) {
+            animal.setMapDirection(animal.getMapDirection().turnAround());
+        } else if (animal.getPosition().y < lowerLeft.y) {
             y= lowerLeft.y;
+            animal.setMapDirection(animal.getMapDirection().turnAround());
         } else {
-            y = position.y;
+            y = animal.getPosition().y;
         }
-        return new Vector2d(x,y);
+        animal.move(new Vector2d(x,y));
     }
 }

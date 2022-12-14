@@ -30,4 +30,18 @@ public enum MapDirection {
             default -> new Vector2d(0, 0);
         };
     }
+    public MapDirection turnAround(){
+        MapDirection direction = DEFAULT;
+        switch (this){
+            case N -> direction = S;
+            case NE -> direction = SW;
+            case E -> direction = W;
+            case SE -> direction = NW;
+            case S -> direction = N;
+            case SW -> direction = NE;
+            case W -> direction = E;
+            case NW -> direction = SE;
+        }
+        return direction;
+    }
 }

@@ -5,15 +5,29 @@ public class Animal implements IMapElement,Comparable<Animal>{
     private Vector2d vector2d;
     private int age = 0;
     private int numOfChildren = 0;
-
+    private int energy;
     private IGenome genome;
-    //TODO: konstruktor powinnien dostać IGenome genom a nie int[] geny
-    public Animal(Vector2d vector2d,int[] genes) {
+    public Animal(Vector2d vector2d,IGenome genes , int energy) {
         this.vector2d = vector2d;
         this.mapDirection = MapDirection.N;
-        this.genome = new BitOfMadnessGenome(genes);
+        this.genome = genes;
+        this.energy = energy;
     }
-    public void move(){
+
+    public int getEnergy() {
+        return energy;
+    }
+
+    public void move(Vector2d position){
+        this.vector2d = position;
+    }
+    public MapDirection getMapDirection(){return this.mapDirection;}
+
+    public void setMapDirection(MapDirection mapDirection) {
+        this.mapDirection = mapDirection;
+    }
+
+    public void moveUsingGene(){
         int rotation = genome.getCurrentGene();
         for(int i = rotation;i>0;i--){
             this.mapDirection = mapDirection.next();
