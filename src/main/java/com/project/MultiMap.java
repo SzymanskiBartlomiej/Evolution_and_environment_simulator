@@ -30,6 +30,13 @@ public class MultiMap<K,V> {
 
         return false;
     }
+    public boolean update(K key, V value , K newKey){
+        if(remove(key,value)){
+            put(newKey,value);
+            return true;
+        }
+        return false;
+    }
     /**
      * Returns a Collection view of ArrayLists of the values present in this multimap.
      * Useful for iterating over every animal.

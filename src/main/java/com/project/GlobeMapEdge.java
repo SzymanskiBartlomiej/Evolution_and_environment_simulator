@@ -29,4 +29,12 @@ public class GlobeMapEdge implements IMapEdge{
         }
         animal.move(new Vector2d(x,y));
     }
+
+    public Vector2d getLowerLeft() {
+        return lowerLeft;
+    }
+
+    public Vector2d getUpperRight() {
+        return upperRight;
+    }
 }

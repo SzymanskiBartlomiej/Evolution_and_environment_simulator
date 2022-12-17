@@ -11,4 +11,6 @@ public interface IMapEdge {
      * @return Vector2d position where animal should move to.
      */
     void crossedEdge(Animal animal);
+    Vector2d getLowerLeft();
+    Vector2d getUpperRight();
 }

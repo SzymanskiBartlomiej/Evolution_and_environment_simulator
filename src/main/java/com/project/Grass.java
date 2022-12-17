@@ -14,4 +14,9 @@ public class Grass implements IMapElement{
     public String getTexturePath() {
         return null;
     }
+
+    @Override
+    public String toString() {
+        return " * ";
+    }
 }

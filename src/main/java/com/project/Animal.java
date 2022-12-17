@@ -5,7 +5,7 @@ public class Animal implements IMapElement,Comparable<Animal>{
     private Vector2d vector2d;
     private int age = 0;
     private int numOfChildren = 0;
-    private int energy;
+    int energy;
     private IGenome genome;
     public Animal(Vector2d vector2d,IGenome genes , int energy) {
         this.vector2d = vector2d;
@@ -14,9 +14,6 @@ public class Animal implements IMapElement,Comparable<Animal>{
         this.energy = energy;
     }
 
-    public int getEnergy() {
-        return energy;
-    }
 
     public void move(Vector2d position){
         this.vector2d = position;
@@ -42,7 +39,7 @@ public class Animal implements IMapElement,Comparable<Animal>{
 
     @Override
     public String toString() {
-        return mapDirection.toString();
+        return "o";
     }
 
     @Override
