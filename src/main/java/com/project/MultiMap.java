@@ -6,16 +6,43 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 //Multi Mapa jeden klucz wiele wartości możesz dodać metody typu isEmpty itd itp ale nie wiem czy sie przydadza
+// Java code to illustrate the use of comparator()
+// While using a specific comparator
+
+// Importing Comparator and TreeSet classes
+// from java.util package
+import java.util.Comparator;
+import java.util.TreeSet;
+
 public class MultiMap<K,V> {
-    private final Map<K,ArrayList<V>> map = new HashMap<>();
+    private final Map<K,TreeSet<V>> map = new HashMap<>();
+
     public void put(K key, V value)
     {
         if (map.get(key) == null) {
-            map.put(key, new ArrayList<V>());
+            map.put(key, new TreeSet<V>(new Comparator<V>() {
+                @Override
+                public int compare(V a, V b) {
+                    if(a.getClass()==b.getClass() && a.getClass()==Animal.class){
+                        if(((Animal) a).energy == ((Animal) b).energy){
+                            if(((Animal) a).age == ((Animal) b).age){
+                                if(((Animal) a).numOfChildren == ((Animal) b).numOfChildren){
+                                    // bo 2 animale są równe jak mają ten sam hashcode
+                                    return a.hashCode()-b.hashCode();
+                                }
+                                return ((Animal) a).numOfChildren - ((Animal) b).numOfChildren;
+                            }
+                            return ((Animal) a).age - ((Animal) b).age;
+                        }
+                        return ((Animal) a).energy - ((Animal) b).energy;
+                    }
+                    return 0;
+                }
+            }));
         }
         map.get(key).add(value);
     }
-    public ArrayList<V> get(K key) {
+    public TreeSet<V> get(K key) {
         return map.get(key);
     }
     public boolean remove(K key, V value)
@@ -54,6 +81,10 @@ public class MultiMap<K,V> {
      * @param key - key to check
      * @return 2 values for given key which are highest
      */ //szczerze nie wiem czy nie prościej zienić ArrayList na TreeSet ale wtedy mogą być problemy z iteracją po wszystkich animalach idk
+
+    public V getHighest(K key){
+        return get(key).last();
+    }
     public void get2Highest(K key){
     }
 }

@@ -3,9 +3,9 @@ package com.project;
 public class Animal implements IMapElement,Comparable<Animal>{
     private MapDirection mapDirection;
     private Vector2d vector2d;
-    private int age = 0;
-    private int numOfChildren = 0;
+    int numOfChildren = 0;
     int energy;
+    int age = 0;
     private IGenome genome;
     public Animal(Vector2d vector2d,IGenome genes , int energy) {
         this.vector2d = vector2d;

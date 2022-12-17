@@ -56,11 +56,15 @@ public class ForestedEquatorsWorldMap implements IWorldMap{
     public void moveAnimals() {
         /// TODO: observer do animals (multimap)
         for (Animal animal : animals.values()){
+            animals.remove(animal.getPosition(),animal);
+
             animal.energy -= energyLostPerDay;
+            animal.age += 1;
+
             Vector2d oldPosition = animal.getPosition();
             animal.moveUsingGene();
             mapEdge.crossedEdge(animal);
-            animals.update(oldPosition,animal,animal.getPosition());
+            animals.put(animal.getPosition(),animal);
         }
     }
 
@@ -109,6 +113,7 @@ public class ForestedEquatorsWorldMap implements IWorldMap{
     @Override
     public Object objectAt(Vector2d position) {
         if (animals.get(position)!=null){
+            // zwraca ArrayListe
             return animals.get(position);
         }
         return grasses.get(position);
@@ -122,6 +127,16 @@ public class ForestedEquatorsWorldMap implements IWorldMap{
 
     public Animal selectStrongestAnimal(Vector2d vector2d){
         //TODO selects strongest animal on vector.
-        return animals.get(vector2d).get(0);
+        return animals.get(vector2d).last();
+    }
+    public Animal[] select2StrongestAnimal(Vector2d vector2d){
+        Iterator <Animal> iterator = animals.get(vector2d).descendingIterator();
+        Animal animal1 = iterator.next();
+        Animal animal2 = iterator.next();
+        return new Animal[]{animal1,animal2};
+    }
+
+    public Collection<Animal> getAnimals() {
+        return animals.values();
     }
 }
