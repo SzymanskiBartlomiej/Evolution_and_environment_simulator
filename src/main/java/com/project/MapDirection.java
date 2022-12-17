@@ -2,10 +2,11 @@ package com.project;
 
 public enum MapDirection {
     // N - > North NE->North East ...
-    N, NE, E, SE, S, SW,W,NW,DEFAULT;
-    public MapDirection next(){
+    N, NE, E, SE, S, SW, W, NW, DEFAULT;
+
+    public MapDirection next() {
         MapDirection direction = DEFAULT;
-        switch (this){
+        switch (this) {
             case N -> direction = NE;
             case NE -> direction = E;
             case E -> direction = SE;
@@ -17,7 +18,8 @@ public enum MapDirection {
         }
         return direction;
     }
-    public Vector2d toUnitVector(){
+
+    public Vector2d toUnitVector() {
         return switch (this) {
             case N -> new Vector2d(0, 1);
             case NE -> new Vector2d(1, 1);
@@ -30,9 +32,10 @@ public enum MapDirection {
             default -> new Vector2d(0, 0);
         };
     }
-    public MapDirection turnAround(){
+
+    public MapDirection turnAround() {
         MapDirection direction = DEFAULT;
-        switch (this){
+        switch (this) {
             case N -> direction = S;
             case NE -> direction = SW;
             case E -> direction = W;

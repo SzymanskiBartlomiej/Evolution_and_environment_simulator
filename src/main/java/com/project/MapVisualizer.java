@@ -8,6 +8,7 @@ public class MapVisualizer {
 
     /**
      * Initializes the MapVisualizer with an instance of map to visualize.
+     *
      * @param map
      */
     public MapVisualizer(IWorldMap map) {
@@ -69,7 +70,9 @@ public class MapVisualizer {
             Object object = this.map.objectAt(currentPosition);
             if (object != null) {
                 result = object.toString();
-                if(result.length()==3){result += " ";}
+                if (result.length() == 3) {
+                    result += " ";
+                }
             } else {
                 result = EMPTY_CELL;
             }

@@ -15,6 +15,7 @@ public interface IMapElement {
      * @return String conversion of an element.
      */
     String toString();
+
     /**
      * Returns path to texture of an element
      *

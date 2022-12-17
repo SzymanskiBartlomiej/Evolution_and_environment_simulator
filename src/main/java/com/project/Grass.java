@@ -1,10 +1,12 @@
 package com.project;
 
-public class Grass implements IMapElement{
+public class Grass implements IMapElement {
     private Vector2d vector2d;
-    public Grass(Vector2d position){
+
+    public Grass(Vector2d position) {
         vector2d = position;
     }
+
     @Override
     public Vector2d getPosition() {
         return vector2d;

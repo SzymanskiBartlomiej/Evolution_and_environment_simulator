@@ -1,9 +1,8 @@
 package com.project;
 
+import java.sql.Array;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 //Multi Mapa jeden klucz wiele wartości możesz dodać metody typu isEmpty itd itp ale nie wiem czy sie przydadza
 // Java code to illustrate the use of comparator()
@@ -14,42 +13,30 @@ import java.util.stream.Stream;
 import java.util.Comparator;
 import java.util.TreeSet;
 
-public class MultiMap<K,V> {
-    private final Map<K,TreeSet<V>> map = new HashMap<>();
+public class MultiMap<K, V> {
+    private final Map<K, TreeSet<V>> map = new HashMap<>();
+    private final Comparator<V> comparator;
 
-    public void put(K key, V value)
+    public MultiMap(Comparator<V> comparator) {
+        this.comparator = comparator;
+    }
+
+    public void put(K key, V value) //przepraszam ale to było obrzydliwe
     {
         if (map.get(key) == null) {
-            map.put(key, new TreeSet<V>(new Comparator<V>() {
-                @Override
-                public int compare(V a, V b) {
-                    if(a.getClass()==b.getClass() && a.getClass()==Animal.class){
-                        if(((Animal) a).energy == ((Animal) b).energy){
-                            if(((Animal) a).age == ((Animal) b).age){
-                                if(((Animal) a).numOfChildren == ((Animal) b).numOfChildren){
-                                    // bo 2 animale są równe jak mają ten sam hashcode
-                                    return a.hashCode()-b.hashCode();
-                                }
-                                return ((Animal) a).numOfChildren - ((Animal) b).numOfChildren;
-                            }
-                            return ((Animal) a).age - ((Animal) b).age;
-                        }
-                        return ((Animal) a).energy - ((Animal) b).energy;
-                    }
-                    return 0;
-                }
-            }));
+            map.put(key, new TreeSet<V>(this.comparator));
         }
         map.get(key).add(value);
     }
+
     public TreeSet<V> get(K key) {
         return map.get(key);
     }
-    public boolean remove(K key, V value)
-    {
+
+    public boolean remove(K key, V value) {
         if (map.get(key) != null) { // key exists
             map.get(key).remove(value);
-            if (map.get(key).isEmpty()){ //ArrayList empty
+            if (map.get(key).isEmpty()) { //TreeSet empty
                 map.remove(key);
             }
             return true;
@@ -57,34 +44,42 @@ public class MultiMap<K,V> {
 
         return false;
     }
-    public boolean update(K key, V value , K newKey){
-        if(remove(key,value)){
-            put(newKey,value);
+
+    public boolean update(K key, V value, K newKey) {
+        if (remove(key, value)) {
+            put(newKey, value);
             return true;
         }
         return false;
     }
+
     /**
-     * Returns a Collection view of ArrayLists of the values present in this multimap.
+     * Returns a Collection view of TreeSets of the values present in this multimap.
      * Useful for iterating over every animal.
+     *
      * @return Collection view of ArrayLists of the values present in this multimap.
      */
     public Collection<V> values() {
-        Collection<V> result = map.values().stream()
+        return map.values().stream()
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
-        return result;
     }
+
     /**
      * Returns 2 values highest for a given key, highest defined by comperator function
      * Przydatne do znalezienia zwierząt które beda sie rozmnażać na dnaym bloku
+     *
      * @param key - key to check
      * @return 2 values for given key which are highest
      */ //szczerze nie wiem czy nie prościej zienić ArrayList na TreeSet ale wtedy mogą być problemy z iteracją po wszystkich animalach idk
-
-    public V getHighest(K key){
+    public V getHighest(K key) {
         return get(key).last();
     }
-    public void get2Highest(K key){
+
+    public ArrayList<V> get2Highest(K key) {
+        ArrayList<V> list = new ArrayList<V>(2);
+        list.add(getHighest(key));
+        list.add(get(key).lower(getHighest(key)));
+        return list;
     }
 }
