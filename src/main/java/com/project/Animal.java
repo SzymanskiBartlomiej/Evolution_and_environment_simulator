@@ -13,7 +13,7 @@ public class Animal implements IMapElement, Comparable<Animal> {
         this.vector2d = vector2d;
         this.mapDirection = MapDirection.N;
         this.genes = genes;
-        this.energy = energy;
+        this.energy = startingEnergy;
     }
 
     public void move(Vector2d position) {

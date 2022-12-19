@@ -1,15 +1,9 @@
 package com.project;
 
-import java.sql.Array;
 import java.util.*;
 import java.util.stream.Collectors;
 
 //Multi Mapa jeden klucz wiele wartości możesz dodać metody typu isEmpty itd itp ale nie wiem czy sie przydadza
-// Java code to illustrate the use of comparator()
-// While using a specific comparator
-
-// Importing Comparator and TreeSet classes
-// from java.util package
 import java.util.Comparator;
 import java.util.TreeSet;
 
@@ -75,11 +69,23 @@ public class MultiMap<K, V> {
     public V getHighest(K key) {
         return get(key).last();
     }
-
+    public Set<K> keySet() {
+        return map.keySet();
+    }
     public ArrayList<V> get2Highest(K key) {
         ArrayList<V> list = new ArrayList<V>(2);
         list.add(getHighest(key));
         list.add(get(key).lower(getHighest(key)));
         return list;
+    }
+
+    @Override
+    public String toString() {
+        String result = "";
+        for(K key:keySet()){
+            result += key.toString()+" ";
+            result += map.get(key) + "\n";
+        }
+        return result;
     }
 }

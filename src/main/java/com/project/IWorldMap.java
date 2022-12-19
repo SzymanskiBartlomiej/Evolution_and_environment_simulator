@@ -1,8 +1,8 @@
 package com.project;
 
-import java.util.Collection;
 
 public interface IWorldMap {
+    void populate(int numOfAnimals);
     /**
      * Grows grass on the map.
      */
