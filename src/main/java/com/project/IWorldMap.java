@@ -1,6 +1,8 @@
 package com.project;
 
 
+import java.util.Collection;
+
 public interface IWorldMap {
     void populate(int numOfAnimals);
     /**
@@ -21,4 +23,5 @@ public interface IWorldMap {
     boolean isOccupied(Vector2d position);
 
     Object objectAt(Vector2d position);
+    Collection<Animal> getAnimals();
 }

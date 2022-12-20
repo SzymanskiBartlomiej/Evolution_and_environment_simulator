@@ -201,4 +201,9 @@ public class ForestedEquatorsWorldMap implements IWorldMap {
         MapVisualizer mapVisualizer = new MapVisualizer(this);
         return mapVisualizer.draw(mapEdge.getLowerLeft(), mapEdge.getUpperRight());
     }
+
+    public Collection<Animal> getAnimals() {
+        // funkcja do testów
+        return animals.values();
+    }
 }
