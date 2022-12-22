@@ -1,6 +1,7 @@
 package com.project;
 
 import java.util.*;
+import java.util.List;
 
 public class ForestedEquatorsWorldMap implements IWorldMap {
     private final IMutation mutation; // typ mutacji
@@ -11,15 +12,14 @@ public class ForestedEquatorsWorldMap implements IWorldMap {
     private final int energyLostToCopulate;
     private final int startingEnergy; //startowa energia
     private final int genomeLength; //długość genomu
+    private int emptyEquatorFields;
+    private int emptyNotEquatorFields;
     private final IGenome genome;
     private final IMapEdge mapEdge;
     private final Map<Vector2d, Grass> grasses = new HashMap<>();
     private final MultiMap<Vector2d, Animal> animals = new MultiMap<>(new AnimalComparator());
     private final Vector2d equatorLowerLeft; // wystarczy może equatorWidth bo i tak wiemy ze ma być na srodku mapy i przez cało jej długość
     private final Vector2d equatorUpperRight;
-    private int emptyEquatorFields;
-
-    private int emptyNotEquatorFields;
 
     public ForestedEquatorsWorldMap(
             IMapEdge mapEdge, IGenome genome,IMutation mutation, Vector2d equatorLowerLeft,
@@ -36,8 +36,8 @@ public class ForestedEquatorsWorldMap implements IWorldMap {
         this.startingEnergy = startingEnergy;
         this.genomeLength = genomeLength;
         this.genome = genome;
-        this.emptyEquatorFields = (equatorUpperRight.x - equatorLowerLeft.x) * (equatorUpperRight.y - equatorLowerLeft.y);
-        this.emptyNotEquatorFields = (mapEdge.getUpperRight().x * mapEdge.getUpperRight().y) - emptyEquatorFields;
+        this.emptyEquatorFields = (equatorUpperRight.x - equatorLowerLeft.x+1) * (equatorUpperRight.y - equatorLowerLeft.y+1);
+        this.emptyNotEquatorFields = ((mapEdge.getUpperRight().x+1) * (mapEdge.getUpperRight().y+1)) - emptyEquatorFields;
         this.energyLostPerDay = energyLostPerDay;
         Random rand = new Random();
         for (int i = 0; i < startingGrassNum; i++) {
@@ -45,8 +45,8 @@ public class ForestedEquatorsWorldMap implements IWorldMap {
             // losowanie trawy na tym równiku nie ma sensu bo jak zostało tylko 1 pole to trwa to w nieskończoność??
             if (emptyEquatorFields > 0 && rand.nextInt(10) + 1 > 2) {
                 do {
-                    int x = rand.nextInt(equatorUpperRight.x - equatorLowerLeft.x) + equatorLowerLeft.x;
-                    int y = rand.nextInt(equatorUpperRight.y - equatorLowerLeft.y) + equatorLowerLeft.y;
+                    int x = rand.nextInt(equatorUpperRight.x - equatorLowerLeft.x+1) + equatorLowerLeft.x;
+                    int y = rand.nextInt(equatorUpperRight.y - equatorLowerLeft.y+1) + equatorLowerLeft.y;
                     grassPosition = new Vector2d(x, y);
                 } while (grasses.get(grassPosition) != null);
                 this.emptyEquatorFields -= 1;
@@ -55,9 +55,9 @@ public class ForestedEquatorsWorldMap implements IWorldMap {
                     int x = rand.nextInt(mapEdge.getUpperRight().x - mapEdge.getLowerLeft().x + 1) + mapEdge.getLowerLeft().x;
                     int y = rand.nextInt(mapEdge.getUpperRight().y - mapEdge.getLowerLeft().y + 1) + mapEdge.getLowerLeft().y;
                     grassPosition = new Vector2d(x, y);
-                } while (grasses.get(grassPosition) != null);
+                } while (grasses.get(grassPosition) != null || (grassPosition.precedes(equatorUpperRight) && grassPosition.follows(equatorLowerLeft)));
                 this.emptyNotEquatorFields -= 1;
-            } else return;
+            } else continue;
             grasses.put(grassPosition, new Grass(grassPosition));
         }
     }
@@ -85,8 +85,8 @@ public class ForestedEquatorsWorldMap implements IWorldMap {
             // losowanie trawy na tym równiku nie ma sensu bo jak zostało tylko 1 pole to trwa to w nieskończoność??
             if (emptyEquatorFields > 0 && rand.nextInt(10) + 1 > 2) {
                 do {
-                    int x = rand.nextInt(equatorUpperRight.x - equatorLowerLeft.x) + equatorLowerLeft.x;
-                    int y = rand.nextInt(equatorUpperRight.y - equatorLowerLeft.y) + equatorLowerLeft.y;
+                    int x = rand.nextInt(equatorUpperRight.x - equatorLowerLeft.x+1) + equatorLowerLeft.x;
+                    int y = rand.nextInt(equatorUpperRight.y - equatorLowerLeft.y+1) + equatorLowerLeft.y;
                     grassPosition = new Vector2d(x, y);
                 } while (grasses.get(grassPosition) != null);
                 this.emptyEquatorFields -= 1;
@@ -95,7 +95,7 @@ public class ForestedEquatorsWorldMap implements IWorldMap {
                     int x = rand.nextInt(mapEdge.getUpperRight().x - mapEdge.getLowerLeft().x + 1) + mapEdge.getLowerLeft().x;
                     int y = rand.nextInt(mapEdge.getUpperRight().y - mapEdge.getLowerLeft().y + 1) + mapEdge.getLowerLeft().y;
                     grassPosition = new Vector2d(x, y);
-                } while (grasses.get(grassPosition) != null);
+                } while (grasses.get(grassPosition) != null || (grassPosition.precedes(equatorUpperRight) && grassPosition.follows(equatorLowerLeft)));
                 this.emptyNotEquatorFields -= 1;
             } else return;
             grasses.put(grassPosition, new Grass(grassPosition));
@@ -108,7 +108,7 @@ public class ForestedEquatorsWorldMap implements IWorldMap {
 
         for (Animal animal : animals.values()) {
             animals.remove(animal.getPosition(), animal);
-            animal.energy -= energyLostPerDay;
+
             animal.age += 1;
             animal.moveUsingGene();
             animal.setCurrentGene(genome.nextGene(animal.getCurrentGene(), genomeLength));
@@ -120,6 +120,7 @@ public class ForestedEquatorsWorldMap implements IWorldMap {
     @Override
     public void removeDeadAnimals() {
         for (Animal animal : animals.values()) {
+            animal.energy -= energyLostPerDay;
             if (animal.energy <= 0) {
                 animals.remove(animal.getPosition(), animal);
             }
@@ -137,17 +138,22 @@ public class ForestedEquatorsWorldMap implements IWorldMap {
         }
         for (Vector2d vector2d : vector2dsToDelete) {
             grasses.remove(vector2d);
+            if (vector2d.precedes(equatorUpperRight) && vector2d.follows(equatorLowerLeft)){
+                emptyEquatorFields += 1;
+            } else{
+                emptyNotEquatorFields += 1;
+            }
         }
     }
 
     @Override
     public void copulation() {
         for (Vector2d vector2d : animals.keySet()) {
-            if (animals.get(vector2d) != null && animals.get(vector2d).size() >= 2) {
+            if (animals.get(vector2d) != null) {
                 ArrayList<Animal> toCopulate = animals.get2Highest(vector2d);
                 Animal a = toCopulate.get(0);
                 Animal b = toCopulate.get(1);
-                if (a.energy >= energyToCopulate && b.energy >= energyToCopulate) {
+                if (b != null && a != null && a.energy >= energyToCopulate && b.energy >= energyToCopulate) {
                     Random rand = new Random();
                     int genesFromStonger = Math.round((float) (a.energy / (a.energy + b.energy)) * genomeLength);
                     int[] genes = new int[genomeLength];

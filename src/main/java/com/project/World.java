@@ -3,8 +3,8 @@ package com.project;
 
 public class World {
     public static void main(String[] args) {
-        IMapEdge edges = new GlobeMapEdge(new Vector2d(20, 20));
-        IWorldMap map = new ForestedEquatorsWorldMap(edges,new BitOfMadnessGenome(),new SlightCorrectionMutation(2, 4), new Vector2d(1, 7), new Vector2d(9, 9), 5, 5, 1 , 5, 4, 10, 5,30 );
+        IMapEdge edges = new GlobeMapEdge(new Vector2d(9, 9));
+        IWorldMap map = new ForestedEquatorsWorldMap(edges,new BitOfMadnessGenome(),new SlightCorrectionMutation(2, 4), new Vector2d(0, 4), new Vector2d(9, 6), 5, 5, 1 , 5, 4, 10, 5,30 );
 //
 //        Vector2d animal1Position = new Vector2d(2, 2);
 //        Animal animal1 = new Animal(animal1Position, new int[]{2, 3, 5, 6, 3}, 10);
@@ -21,7 +21,7 @@ public class World {
 //        Animal[] animals = {animal1, animal2,animal3,animal4};
 //        IEngine engine = new SimulationEngine(map, animals, 60);
 //        engine.run();
-        map.populate(15);
+        map.populate(20);
         IEngine engine = new SimulationEngine(map, new Animal[]{}, 60);
         engine.run();
 
