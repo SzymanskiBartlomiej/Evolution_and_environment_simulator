@@ -20,27 +20,30 @@ public class ForestedEquatorsWorldMap implements IWorldMap {
     private final MultiMap<Vector2d, Animal> animals = new MultiMap<>(new AnimalComparator());
     private final Vector2d equatorLowerLeft; // wystarczy może equatorWidth bo i tak wiemy ze ma być na srodku mapy i przez cało jej długość
     private final Vector2d equatorUpperRight;
+    private int deadAnimals = 0;
+    private int sumAnimalLifeSpan = 0;
+    private final HashMap<int[],Integer> genomeCount = new HashMap();
 
     public ForestedEquatorsWorldMap(
-            IMapEdge mapEdge, IGenome genome,IMutation mutation, Vector2d equatorLowerLeft,
-            Vector2d equatorUpperRight,  int grassEnergy, int grassPerDay, int energyLostPerDay,
-            int energyToCopulate, int energyLostToCopulate, int startingEnergy, int genomeLength,int startingGrassNum) {
+            IMapEdge mapEdge, IGenome genome,IMutation mutation, Map<String, Integer> jsonConfiguration) {
         this.mutation = mutation;
         this.mapEdge = mapEdge;
-        this.equatorLowerLeft = equatorLowerLeft;
-        this.equatorUpperRight = equatorUpperRight;
-        this.grassEnergy = grassEnergy;
-        this.grassPerDay = grassPerDay;
-        this.energyToCopulate = energyToCopulate;
-        this.energyLostToCopulate = energyLostToCopulate;
-        this.startingEnergy = startingEnergy;
-        this.genomeLength = genomeLength;
+        this.equatorLowerLeft = new Vector2d(0,jsonConfiguration.get("height")-jsonConfiguration.get("equatorHeight"));
+        this.equatorUpperRight = new Vector2d(jsonConfiguration.get("width")-1,jsonConfiguration.get("height")-1);
+        this.grassEnergy = jsonConfiguration.get("grassEnergy");
+        this.grassPerDay = jsonConfiguration.get("grassPerDay");
+        this.energyToCopulate = jsonConfiguration.get("energyToCopulate");
+        System.out.println(equatorLowerLeft.toString());
+        System.out.println(equatorUpperRight.toString());
+        this.energyLostToCopulate = jsonConfiguration.get("energyLostToCopulate");
+        this.startingEnergy = jsonConfiguration.get("startingEnergy");
+        this.genomeLength = jsonConfiguration.get("genomeLength");
         this.genome = genome;
         this.emptyEquatorFields = (equatorUpperRight.x - equatorLowerLeft.x+1) * (equatorUpperRight.y - equatorLowerLeft.y+1);
         this.emptyNotEquatorFields = ((mapEdge.getUpperRight().x+1) * (mapEdge.getUpperRight().y+1)) - emptyEquatorFields;
-        this.energyLostPerDay = energyLostPerDay;
+        this.energyLostPerDay = jsonConfiguration.get("energyLostPerDay");
         Random rand = new Random();
-        for (int i = 0; i < startingGrassNum; i++) {
+        for (int i = 0; i < jsonConfiguration.get("startingGrassNum"); i++) {
             Vector2d grassPosition;
             // losowanie trawy na tym równiku nie ma sensu bo jak zostało tylko 1 pole to trwa to w nieskończoność??
             if (emptyEquatorFields > 0 && rand.nextInt(10) + 1 > 2) {
@@ -72,6 +75,8 @@ public class ForestedEquatorsWorldMap implements IWorldMap {
             for (int j = 0; j < genomeLength; j++) {
                 genes[j] = rand.nextInt(8);
             }
+            Integer genomeCountValue = genomeCount.get(genes);
+            genomeCount.put(genes, genomeCountValue == null ? 1 : genomeCountValue + 1);
             Animal animal = new Animal(animalPosition, genes, startingEnergy);
             animals.put(animalPosition, animal);
         }
@@ -122,6 +127,8 @@ public class ForestedEquatorsWorldMap implements IWorldMap {
         for (Animal animal : animals.values()) {
             animal.energy -= energyLostPerDay;
             if (animal.energy <= 0) {
+                deadAnimals+=1;
+                sumAnimalLifeSpan+=animal.age;
                 animals.remove(animal.getPosition(), animal);
             }
         }
@@ -174,6 +181,8 @@ public class ForestedEquatorsWorldMap implements IWorldMap {
                     a.numOfChildren += 1;
                     b.numOfChildren += 1;
                     genes = mutation.mutate(genes);
+                    Integer genomeCountValue = genomeCount.get(genes);
+                    genomeCount.put(genes, genomeCountValue == null ? 1 : genomeCountValue + 1);
                     Animal animal = new Animal(vector2d, genes, 2 * energyLostToCopulate);
                     place(animal);
                 }
@@ -211,5 +220,20 @@ public class ForestedEquatorsWorldMap implements IWorldMap {
     public Collection<Animal> getAnimals() {
         // funkcja do testów
         return animals.values();
+    }
+    public Collection<Grass> getGrasses() {
+        return grasses.values();
+    }
+
+    public int getEmptyFields() {
+        return emptyEquatorFields + emptyNotEquatorFields;
+    }
+    public int averageAnimalLifeSpan(){
+        if(this.deadAnimals == 0) { return 0;}
+        return this.sumAnimalLifeSpan/this.deadAnimals;
+    }
+
+    public HashMap<int[], Integer> getGenomeCount() {
+        return genomeCount;
     }
 }

@@ -2,6 +2,7 @@ package com.project;
 
 
 import java.util.Collection;
+import java.util.HashMap;
 
 public interface IWorldMap {
     void populate(int numOfAnimals);
@@ -24,4 +25,8 @@ public interface IWorldMap {
 
     Object objectAt(Vector2d position);
     Collection<Animal> getAnimals();
+    Collection<Grass> getGrasses();
+    int getEmptyFields();
+    int averageAnimalLifeSpan();
+    HashMap<int[], Integer> getGenomeCount();
 }

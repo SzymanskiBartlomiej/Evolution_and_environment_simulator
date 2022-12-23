@@ -1,0 +1,15 @@
+{
+	"height" : 20,
+	"width" : 20,
+	"equatorHeight" :5,
+	"grassEnergy" : 5,
+	"grassPerDay" : 5,
+	"energyLostPerDay" : 1,
+	"energyToCopulate" : 5,
+	"energyLostToCopulate" : 4,
+	"startingEnergy" : 10,
+	"genomeLength" : 5,
+	"startingGrassNum" : 30,
+	"numOfAnimals" : 20,
+	"days" : 100
+}

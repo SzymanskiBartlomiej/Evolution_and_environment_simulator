@@ -1,29 +1,39 @@
 package com.project;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.File;
+import java.io.File.*;
+import java.util.Map;
+
 public class World {
     public static void main(String[] args) {
-        IMapEdge edges = new GlobeMapEdge(new Vector2d(9, 9));
-        IWorldMap map = new ForestedEquatorsWorldMap(edges,new BitOfMadnessGenome(),new SlightCorrectionMutation(2, 4), new Vector2d(0, 4), new Vector2d(9, 6), 5, 5, 1 , 5, 4, 10, 5,30 );
-//
-//        Vector2d animal1Position = new Vector2d(2, 2);
-//        Animal animal1 = new Animal(animal1Position, new int[]{2, 3, 5, 6, 3}, 10);
-//
-//        Vector2d animal2Position = new Vector2d(4, 8);
-//        Animal animal2 = new Animal(animal2Position, new int[]{2, 3, 5, 1, 3}, 10);
-//
-//        Vector2d animal3Position = new Vector2d(1, 1);
-//        Animal animal3 = new Animal(animal3Position, new int[]{0, 4, 3, 5, 6}, 10);
-//
-//        Vector2d animal4Position = new Vector2d(1, 3);
-//        Animal animal4 = new Animal(animal4Position, new int[]{4, 7, 5, 6, 2}, 10);
-//
-//        Animal[] animals = {animal1, animal2,animal3,animal4};
-//        IEngine engine = new SimulationEngine(map, animals, 60);
-//        engine.run();
-        map.populate(20);
-        IEngine engine = new SimulationEngine(map, new Animal[]{}, 60);
-        engine.run();
+        ObjectMapper mapper = new ObjectMapper();
+        File json = new File("configurationFiles/test1.json");
+
+        // bez zapisywania statystyk
+//        try {
+//            Map<String, Integer> jsonConfiguration = mapper.readValue(json, Map.class);
+//            IMapEdge edges = new GlobeMapEdge(new Vector2d(jsonConfiguration.get("width")-1, jsonConfiguration.get("height")-1));
+//            IWorldMap map = new ForestedEquatorsWorldMap(edges,new BitOfMadnessGenome(),new SlightCorrectionMutation(2, 4),jsonConfiguration );
+//            map.populate(jsonConfiguration.get("numOfAnimals"));
+//            IEngine engine = new SimulationEngine(map, new Animal[]{}, false);
+//            engine.run();
+//        }  catch (Exception ex) {
+//            ex.printStackTrace();
+//        }
+        //z zapisywaniem statystyk
+        try {
+            Map<String, Integer> jsonConfiguration = mapper.readValue(json, Map.class);
+            IMapEdge edges = new GlobeMapEdge(new Vector2d(jsonConfiguration.get("width")-1, jsonConfiguration.get("height")-1));
+            IWorldMap map = new ForestedEquatorsWorldMap(edges,new BitOfMadnessGenome(),new SlightCorrectionMutation(2, 4),jsonConfiguration );
+            map.populate(jsonConfiguration.get("numOfAnimals"));
+            IEngine engine = new SimulationEngine(map, new Animal[]{}, jsonConfiguration.get("days"),true);
+            engine.run();
+        }  catch (Exception ex) {
+            ex.printStackTrace();
+        }
 
     }
 }
