@@ -44,7 +44,6 @@ public class Statistics {
                 res = gene;
             }
         }
-        System.out.println(maxCount);
         return res;
     }
 }
