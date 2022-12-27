@@ -7,9 +7,9 @@
 	"energyLostPerDay" : 1,
 	"energyToCopulate" : 3,
 	"energyLostToCopulate" : 2,
-	"startingEnergy" : 10,
+	"startingEnergy" : 15,
 	"genomeLength" : 7,
 	"startingGrassNum" : 15,
-	"numOfAnimals" : 10,
+	"numOfAnimals" : 15,
 	"days" : 100
 }

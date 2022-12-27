@@ -2,6 +2,8 @@ package com.project;
 
 
 import com.opencsv.CSVWriter;
+import com.project.gui.App;
+import javafx.application.Platform;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -13,16 +15,18 @@ public class SimulationEngine implements IEngine {
     private final int days;
     private final Statistics statistics;
     private final Boolean saveConfig;
+    private final App app;
     FileWriter outputFile;
     CSVWriter writer;
-    public SimulationEngine(IWorldMap iWorldMap, Animal[] animals, int days,Boolean saveConfig) {
+    public SimulationEngine(IWorldMap iWorldMap, Animal[] animals, int days,Boolean saveConfig, App app,Statistics statistics) {
         this.map = iWorldMap;
         this.days = days;
         this.saveConfig = saveConfig;
+        this.app = app;
         for (Animal animal : animals) {
             this.map.place(animal);
         }
-        this.statistics = new Statistics(map);
+        this.statistics = statistics;
         if(saveConfig){
             try {
                 String fileName = java.time.LocalDateTime.now().toString() + ".csv";
@@ -47,9 +51,16 @@ public class SimulationEngine implements IEngine {
             map.copulation();
             map.growGrass();
             statistics.updateStats();
-            System.out.println(map.toString());
             if(saveConfig){
                 saveStatsToCsv(i);
+            }
+            try{
+                Thread.sleep(1000);
+                Platform.runLater( () -> this.app.updateMap());
+                Platform.runLater( () -> this.app.updateStats());
+            }
+            catch (InterruptedException e){
+                throw new RuntimeException(e.getMessage());
             }
         }
         if(saveConfig){

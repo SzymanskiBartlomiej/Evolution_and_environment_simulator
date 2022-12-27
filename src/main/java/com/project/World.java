@@ -2,6 +2,8 @@ package com.project;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.project.gui.App;
+import javafx.application.Application;
 
 import java.io.File;
 import java.io.File.*;
@@ -18,22 +20,22 @@ public class World {
 //            IMapEdge edges = new GlobeMapEdge(new Vector2d(jsonConfiguration.get("width")-1, jsonConfiguration.get("height")-1));
 //            IWorldMap map = new ForestedEquatorsWorldMap(edges,new BitOfMadnessGenome(),new SlightCorrectionMutation(2, 4),jsonConfiguration );
 //            map.populate(jsonConfiguration.get("numOfAnimals"));
-//            IEngine engine = new SimulationEngine(map, new Animal[]{}, false);
+//            IEngine engine = new SimulationEngine(map, new Animal[]{}, jsonConfiguration.get("days"),false);
 //            engine.run();
 //        }  catch (Exception ex) {
 //            ex.printStackTrace();
 //        }
         //z zapisywaniem statystyk
-        try {
-            Map<String, Integer> jsonConfiguration = mapper.readValue(json, Map.class);
-            IMapEdge edges = new GlobeMapEdge(new Vector2d(jsonConfiguration.get("width")-1, jsonConfiguration.get("height")-1));
-            IWorldMap map = new ForestedEquatorsWorldMap(edges,new BitOfMadnessGenome(),new SlightCorrectionMutation(2, 4),jsonConfiguration );
-            map.populate(jsonConfiguration.get("numOfAnimals"));
-            IEngine engine = new SimulationEngine(map, new Animal[]{}, jsonConfiguration.get("days"),true);
-            engine.run();
-        }  catch (Exception ex) {
-            ex.printStackTrace();
-        }
-
+//        try {
+//            Map<String, Integer> jsonConfiguration = mapper.readValue(json, Map.class);
+//            IMapEdge edges = new GlobeMapEdge(new Vector2d(jsonConfiguration.get("width")-1, jsonConfiguration.get("height")-1));
+//            IWorldMap map = new ForestedEquatorsWorldMap(edges,new BitOfMadnessGenome(),new SlightCorrectionMutation(2, 4),jsonConfiguration );
+//            map.populate(jsonConfiguration.get("numOfAnimals"));
+//            IEngine engine = new SimulationEngine(map, new Animal[]{}, jsonConfiguration.get("days"),true);
+//            engine.run();
+//        }  catch (Exception ex) {
+//            ex.printStackTrace();
+//        }
+        Application.launch(App.class, args);
     }
 }

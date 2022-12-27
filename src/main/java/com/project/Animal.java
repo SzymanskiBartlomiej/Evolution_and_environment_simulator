@@ -4,7 +4,7 @@ public class Animal implements IMapElement, Comparable<Animal> {
     private MapDirection mapDirection;
     private Vector2d vector2d;
     int numOfChildren = 0;
-    int energy;
+    public int energy;
     int age = 0;
     private final int[] genes;
     private int currentGene = 0;
@@ -59,7 +59,7 @@ public class Animal implements IMapElement, Comparable<Animal> {
 
     @Override
     public String getTexturePath() {
-        return null;
+        return "src/main/resources/animal.png";
     }
 
     @Override

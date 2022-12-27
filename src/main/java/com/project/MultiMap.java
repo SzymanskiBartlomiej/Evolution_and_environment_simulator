@@ -15,7 +15,7 @@ public class MultiMap<K, V> {
         this.comparator = comparator;
     }
 
-    public void put(K key, V value) //przepraszam ale to było obrzydliwe
+    public void put(K key, V value)
     {
         if (map.get(key) == null) {
             map.put(key, new TreeSet<V>(this.comparator));

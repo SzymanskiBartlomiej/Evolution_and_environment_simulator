@@ -205,7 +205,6 @@ public class ForestedEquatorsWorldMap implements IWorldMap {
     @Override
     public Object objectAt(Vector2d position) {
         if (animals.get(position) != null) {
-            // zwraca ArrayListe
             return animals.get(position);
         }
         return grasses.get(position);

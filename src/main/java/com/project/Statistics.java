@@ -6,12 +6,12 @@ import java.util.HashMap;
 
 public class Statistics {
     private final IWorldMap map;
-    int numOfAnimals;
-    int numOfGrasses;
-    int numOfEmptyFields;
-    int[] mostPopularGenes;
-    int averageAnimalEnergy;
-    int averageAnimalLifeSpan;
+    public int numOfAnimals;
+    public int numOfGrasses;
+    public int numOfEmptyFields;
+    public int[] mostPopularGenes;
+    public int averageAnimalEnergy;
+    public int averageAnimalLifeSpan;
 
     public Statistics(IWorldMap map) {
         this.map = map;
@@ -44,7 +44,6 @@ public class Statistics {
                 res = gene;
             }
         }
-        System.out.println(maxCount);
         return res;
     }
 }

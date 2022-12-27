@@ -14,7 +14,7 @@ public class Grass implements IMapElement {
 
     @Override
     public String getTexturePath() {
-        return null;
+        return "src/main/resources/grass.png";
     }
 
     @Override
