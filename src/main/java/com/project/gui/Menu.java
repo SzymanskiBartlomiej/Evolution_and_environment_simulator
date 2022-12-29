@@ -5,9 +5,7 @@ import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -15,11 +13,14 @@ import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class Menu extends Application{
     private final ArrayList<TextField> textFields = new ArrayList<>();
     private Map<String, Integer> configuration = new HashMap<>();
+
+    private boolean saveStats = false;
     private final String[] labelText = new String[]{
             "Map Height",
             "Map Width",
@@ -51,7 +52,7 @@ public class Menu extends Application{
     @Override
     public void start(Stage primaryStage) {
         ArrayList<Label> labels = new ArrayList<>();
-        VBox vBox = new VBox();
+        VBox vBox = new VBox(1);
         for(int i = 0;i<labelText.length;i++){
             labels.add(new Label(labelText[i]));
             textFields.add(new TextField());
@@ -80,15 +81,32 @@ public class Menu extends Application{
                         }
                     }
                 });
-        vBox.getChildren().add(openButton);
+        RadioButton toggleSaveStats = new RadioButton("Save to csv");
+        RadioButton toggleSaveConfig = new RadioButton("Save configuration");
+        vBox.getChildren().add(new HBox(5,openButton,toggleSaveStats,toggleSaveConfig));
         Button newSimulationButton = new Button("Start");
         vBox.getChildren().add(newSimulationButton);
-        Scene scene = new Scene(vBox, 400, 620);
+        Scene scene = new Scene(vBox, 400, 635);
         primaryStage.setScene(scene);
         primaryStage.show();
         newSimulationButton.setOnAction(event -> {
             for(int i = 0;i<keys.length;i++){
                 configuration.put(keys[i],Integer.parseInt(textFields.get(i).getText()));
+            }
+            saveStats = toggleSaveStats.isSelected();
+            if (toggleSaveConfig.isSelected()){
+                String fileName = new SimpleDateFormat("yyyy-MM-dd hh-mm-ss").format(new Date()) + ".json";
+                File file = new File("configurationFiles");
+                if (!file.exists()) {
+                    file.mkdir();
+                }
+                try {
+                    mapper.writeValue(new File("configurationFiles/" + fileName), configuration);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+
+
             }
             newSimulation();
         });
@@ -96,7 +114,7 @@ public class Menu extends Application{
 
     private void newSimulation(){
         Stage stage = new Stage();
-        App app = new App(stage,configuration);
+        App app = new App(stage,configuration,saveStats);
         System.out.println("continuing");
         }
     }

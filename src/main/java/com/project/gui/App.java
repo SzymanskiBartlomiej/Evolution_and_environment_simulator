@@ -27,14 +27,10 @@ public class App {
 
 
     private int days;
-    public App(Stage stage,Map<String, Integer> configuration) {
+    public App(Stage stage,Map<String, Integer> configuration,boolean saveStats) {
 
         try {
-            //TODO wybór konfiguracji do wczytania lub utworzenie nowej
-            //TODO wybór użytkownika czy chce zapisać statystyki symulacji do csv
-            ObjectMapper mapper = new ObjectMapper();
-            File json = new File("configurationFiles/test1.json");
-//            configuration = mapper.readValue(json, Map.class);
+
             this.edges = new GlobeMapEdge(new Vector2d(configuration.get("width")-1, configuration.get("height")-1));
             this.map = new ForestedEquatorsWorldMap(edges,new BitOfMadnessGenome(),new SlightCorrectionMutation(2, 4),configuration );
             map.populate(configuration.get("numOfAnimals"));
@@ -54,11 +50,10 @@ public class App {
         Scene scene = new Scene(new VBox(gridPane,stats,stopButton), 600, 800);
         stage.setScene(scene);
         stage.show();
-        IEngine engine = new SimulationEngine(map, new Animal[]{}, days,false,this,statistics);
+        IEngine engine = new SimulationEngine(map, new Animal[]{}, days,saveStats,this,statistics);
         Thread engineThread = new Thread(engine::run);
         engineThread.setDaemon(true); //pozwala na zatrzmyanie threaadu przy zamknięciu okna
         engineThread.start();
-        //Można to napisać o wiele lepiej no ale coż
         stopButton.setOnAction(event -> {
             engine.changeRunning();
             if (stopButton.getText().equals("Pause")){

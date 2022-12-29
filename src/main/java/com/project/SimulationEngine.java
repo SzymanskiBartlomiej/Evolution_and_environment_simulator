@@ -8,7 +8,9 @@ import javafx.application.Platform;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 
 public class SimulationEngine implements IEngine,Runnable {
     private final IWorldMap map;
@@ -31,7 +33,11 @@ public class SimulationEngine implements IEngine,Runnable {
         this.statistics = statistics;
         if(saveConfig){
             try {
-                String fileName = java.time.LocalDateTime.now() + ".csv";
+                String fileName = new SimpleDateFormat("yyyy-MM-dd hh-mm-ss").format(new Date()) + ".csv";
+                File file = new File("SavedStats");
+                if (!file.exists()) {
+                    file.mkdir();
+                }
                 this.outputFile = new FileWriter("SavedStats/" + fileName);
                 this.writer = new CSVWriter(outputFile);
                 String[] header = { "numOfAnimals", "numOfGrasses", "numOfEmptyFields","mostPopularGenes" , "averageAnimalEnergy" , "averageAnimalLifeSpan" };
