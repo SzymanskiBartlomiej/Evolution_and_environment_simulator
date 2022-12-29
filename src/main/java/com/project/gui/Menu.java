@@ -1,19 +1,25 @@
 package com.project.gui;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
 
-//TODO: na jutro konfiguracja z pliku, kończenie thredu przy zamknieciu okna
 public class Menu extends Application{
     private final ArrayList<TextField> textFields = new ArrayList<>();
+    private Map<String, Integer> configuration = new HashMap<>();
     private final String[] labelText = new String[]{
             "Map Height",
             "Map Width",
@@ -52,21 +58,43 @@ public class Menu extends Application{
             vBox.getChildren().add(labels.get(i));
             vBox.getChildren().add(textFields.get(i));
         }
+        Button openButton = new Button("Read from a json file");
+        FileChooser fileChooser = new FileChooser();
+        ObjectMapper mapper = new ObjectMapper();
+        openButton.setOnAction(
+                new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(final ActionEvent e) {
+                        File file = fileChooser.showOpenDialog(primaryStage);
+                        if (file != null) {
+                            try {
+                                configuration = mapper.readValue(file, Map.class);
+                            } catch (IOException ex) {
+                                throw new RuntimeException(ex);
+                            }
+                            for(int i = 0;i<keys.length;i++){
+                                textFields.get(i).setText(Integer.toString(configuration.get(keys[i])));;
+                            }
+                            System.out.println(configuration.toString());
+
+                        }
+                    }
+                });
+        vBox.getChildren().add(openButton);
         Button newSimulationButton = new Button("Start");
         vBox.getChildren().add(newSimulationButton);
-        Scene scene = new Scene(vBox, 400, 600);
+        Scene scene = new Scene(vBox, 400, 620);
         primaryStage.setScene(scene);
         primaryStage.show();
         newSimulationButton.setOnAction(event -> {
+            for(int i = 0;i<keys.length;i++){
+                configuration.put(keys[i],Integer.parseInt(textFields.get(i).getText()));
+            }
             newSimulation();
         });
     }
 
     private void newSimulation(){
-        Map<String, Integer> configuration = new HashMap<>();
-        for(int i = 0;i<keys.length;i++){
-            configuration.put(keys[i],Integer.parseInt(textFields.get(i).getText()));
-        }
         Stage stage = new Stage();
         App app = new App(stage,configuration);
         System.out.println("continuing");

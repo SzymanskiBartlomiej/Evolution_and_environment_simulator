@@ -7,6 +7,7 @@ import com.project.gui.Menu;
 import javafx.application.Application;
 
 import java.io.File;
+import java.util.HashMap;
 
 public class World {
     public static void main(String[] args) {
@@ -37,6 +38,5 @@ public class World {
 //        }
         //Application.launch(App.class, args);
         Application.launch(Menu.class,args);
-        System.out.println("still nuning");
     }
 }

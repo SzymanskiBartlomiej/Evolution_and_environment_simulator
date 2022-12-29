@@ -56,6 +56,7 @@ public class App {
         stage.show();
         IEngine engine = new SimulationEngine(map, new Animal[]{}, days,false,this,statistics);
         Thread engineThread = new Thread(engine::run);
+        engineThread.setDaemon(true); //pozwala na zatrzmyanie threaadu przy zamknięciu okna
         engineThread.start();
         //Można to napisać o wiele lepiej no ale coż
         stopButton.setOnAction(event -> {
@@ -65,6 +66,11 @@ public class App {
             }else{
                 stopButton.setText("Pause");
             }
+        });
+        //zatrzymywanie threadu przy zamknięciu okna
+        stage.setOnCloseRequest(event -> {
+            System.out.println("Stage is closing");
+            engineThread.interrupt();
         });
     }
     void drawGrid(GridPane gridPane){
