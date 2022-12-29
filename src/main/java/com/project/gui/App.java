@@ -31,6 +31,7 @@ public class App {
 
     private LineChart lineChart;
     private int days;
+    private Animal observedAnimal;
     public App(Stage stage,Map<String, Integer> configuration,boolean saveStats) {
 
         try {
@@ -54,7 +55,7 @@ public class App {
         createPlot();
         lineChart.setPrefWidth(450);
         HBox hbox = new HBox(stats,lineChart);
-        Scene scene = new Scene(new VBox(gridPane,hbox,stopButton), 600, 800);
+        Scene scene = new Scene(new VBox(gridPane,hbox,stopButton), 800, 900);
         stage.setScene(scene);
         stage.show();
         engine = new SimulationEngine(map, new Animal[]{}, days,saveStats,this,statistics);
@@ -64,15 +65,30 @@ public class App {
         stopButton.setOnAction(event -> {
             engine.changeRunning();
             if (stopButton.getText().equals("Pause")){
+                gridPane.setDisable(false);
+                gridPane.setOnMouseClicked( ( e ) ->
+                {
+                    Node clickedNode = e.getPickResult().getIntersectedNode().getParent();
+                    System.out.println(clickedNode.toString());
+                    Integer colIndex = gridPane.getColumnIndex(clickedNode.getParent()) - 1; //x
+                    Integer rowIndex = edges.getUpperRight().y + 1 - gridPane.getRowIndex(clickedNode.getParent());
+                    Object object = this.map.objectAt(new Vector2d(colIndex,rowIndex));
+                    int i = 0;
+                    for (Node node : clickedNode.getParent().getChildrenUnmodifiable()){
+                        i+=1;
+                        if(node == clickedNode){
+                            break;
+                        }
+                    }
+                    Animal animal = new ArrayList<>((Collection<Animal>)object).get(i-1);
+                    this.observedAnimal = animal;
+                    updateStats();
+                } );
                 stopButton.setText("Start");
             }else{
                 stopButton.setText("Pause");
+                gridPane.setDisable(true);
             }
-        });
-        //zatrzymywanie threadu przy zamknięciu okna
-        stage.setOnCloseRequest(event -> {
-            System.out.println("Stage is closing");
-            engineThread.interrupt();
         });
     }
     void drawGrid(GridPane gridPane){
@@ -168,7 +184,25 @@ public class App {
         Label mostPopularGenes = new Label("Most popular genes: " +"\n"+ Arrays.toString(statistics.mostPopularGenes));
         Label averageAnimalEnergy = new Label("avg. animal energy: " + statistics.averageAnimalEnergy);
         Label averageAnimalLifeSpan = new Label("avg. animal lifespan: " + statistics.averageAnimalLifeSpan);
-        this.stats.getChildren().addAll(numOfAnimals,numOfGrasses,numOfEmptyFields,mostPopularGenes,averageAnimalEnergy,averageAnimalLifeSpan);
+        if(observedAnimal == null){
+            this.stats.getChildren().addAll(numOfAnimals,numOfGrasses,numOfEmptyFields,mostPopularGenes,averageAnimalEnergy,averageAnimalLifeSpan);
+        }
+        else{
+            Label ObservedAnimalEnergy = new Label("\n Observed Animal Energy: " + observedAnimal.energy);
+            Label ObservedAnimalGenes = new Label("Observed Animal Genes: " + Arrays.toString(observedAnimal.getGenes()));
+            Label ObservedAnimalCurrentGene = new Label("Observed Animal Current Gene: " + observedAnimal.getCurrentGene());
+            Label ObservedAnimalChildrens = new Label("Observed Animal Childrens: " + observedAnimal.getNumOfChildren());
+            Label ObservedAnimalAge= new Label("Observed Animal Genes: " + observedAnimal.getAge());
+            Label ObservedAnimalDayOfDeath= new Label("Observed Animal Day Of Death: " + observedAnimal.getDayOfDeath());
+            Button stopObserving = new Button("stopObserving");
+            stopObserving.setOnAction(event -> {
+                this.observedAnimal = null;
+                updateStats();
+            });
+            this.stats.getChildren().addAll(numOfAnimals,numOfGrasses,numOfEmptyFields,mostPopularGenes,
+                    averageAnimalEnergy,averageAnimalLifeSpan,ObservedAnimalEnergy,ObservedAnimalGenes,
+                    ObservedAnimalCurrentGene,ObservedAnimalChildrens,ObservedAnimalAge,ObservedAnimalDayOfDeath,stopObserving);
+        }
     }
 
     private void createPlot(){

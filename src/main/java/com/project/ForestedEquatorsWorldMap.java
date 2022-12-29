@@ -121,10 +121,11 @@ public class ForestedEquatorsWorldMap implements IWorldMap {
     }
 
     @Override
-    public void removeDeadAnimals() {
+    public void removeDeadAnimals(int day) {
         for (Animal animal : animals.values()) {
             animal.energy -= energyLostPerDay;
             if (animal.energy <= 0) {
+                animal.dayOfDeath = day;
                 deadAnimals+=1;
                 sumAnimalLifeSpan+=animal.age;
                 animals.remove(animal.getPosition(), animal);

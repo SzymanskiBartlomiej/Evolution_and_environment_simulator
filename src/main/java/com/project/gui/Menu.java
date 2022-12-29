@@ -86,7 +86,7 @@ public class Menu extends Application{
         vBox.getChildren().add(new HBox(5,openButton,toggleSaveStats,toggleSaveConfig));
         Button newSimulationButton = new Button("Start");
         vBox.getChildren().add(newSimulationButton);
-        Scene scene = new Scene(vBox, 400, 635);
+        Scene scene = new Scene(vBox, 400, 650);
         primaryStage.setScene(scene);
         primaryStage.show();
         newSimulationButton.setOnAction(event -> {

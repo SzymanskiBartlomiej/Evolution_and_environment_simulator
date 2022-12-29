@@ -53,7 +53,7 @@ public class SimulationEngine implements IEngine,Runnable {
     public void run() {
         for (currDay=0; currDay <= days; currDay++) {
             System.out.println("day "+ (currDay));
-            map.removeDeadAnimals();
+            map.removeDeadAnimals(currDay);
             map.moveAnimals();
             map.eatGrass();
             map.copulation();

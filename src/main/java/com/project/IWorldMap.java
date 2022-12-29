@@ -13,7 +13,7 @@ public interface IWorldMap {
 
     void moveAnimals();
 
-    void removeDeadAnimals();
+    void removeDeadAnimals(int day);
 
     void eatGrass();
 
