@@ -2,9 +2,10 @@ package com.project.gui;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.*;
-import javafx.application.Application;
+import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -17,45 +18,53 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.*;
-
-public class App extends Application {
+public class App {
     private IWorldMap map;
     private IMapEdge edges;
     private Statistics statistics;
-    private GridPane gridPane = new GridPane();
-    private VBox stats = new VBox();
+    private final GridPane gridPane = new GridPane();
+    private final VBox stats = new VBox();
+
+
     private int days;
-    public App() {
+    public App(Stage stage,Map<String, Integer> configuration) {
+
         try {
             //TODO wybór konfiguracji do wczytania lub utworzenie nowej
             //TODO wybór użytkownika czy chce zapisać statystyki symulacji do csv
             ObjectMapper mapper = new ObjectMapper();
             File json = new File("configurationFiles/test1.json");
-            Map<String, Integer> jsonConfiguration = mapper.readValue(json, Map.class);
-            this.edges = new GlobeMapEdge(new Vector2d(jsonConfiguration.get("width")-1, jsonConfiguration.get("height")-1));
-            this.map = new ForestedEquatorsWorldMap(edges,new BitOfMadnessGenome(),new SlightCorrectionMutation(2, 4),jsonConfiguration );
-            map.populate(jsonConfiguration.get("numOfAnimals"));
-            this.days = jsonConfiguration.get("days");
+//            configuration = mapper.readValue(json, Map.class);
+            this.edges = new GlobeMapEdge(new Vector2d(configuration.get("width")-1, configuration.get("height")-1));
+            this.map = new ForestedEquatorsWorldMap(edges,new BitOfMadnessGenome(),new SlightCorrectionMutation(2, 4),configuration );
+            map.populate(configuration.get("numOfAnimals"));
+            this.days = configuration.get("days");
             this.statistics = new Statistics(map);
         }  catch (Exception ex) {
             ex.printStackTrace();
         }
-    }
-
-    @Override
-    public void start(Stage primaryStage) throws Exception {
-        Button stopButton = new Button("stop");
+        Button stopButton = new Button("Pause");
         drawGrid(gridPane);
-        drawObjects(gridPane);
+        try {
+            drawObjects(gridPane);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
         updateStats();
         Scene scene = new Scene(new VBox(gridPane,stats,stopButton), 600, 800);
-        primaryStage.setScene(scene);
-        primaryStage.show();
+        stage.setScene(scene);
+        stage.show();
         IEngine engine = new SimulationEngine(map, new Animal[]{}, days,false,this,statistics);
         Thread engineThread = new Thread(engine::run);
         engineThread.start();
-        stopButton.setOnAction(value ->{
-            //TODO zatrzymanie symulacji
+        //Można to napisać o wiele lepiej no ale coż
+        stopButton.setOnAction(event -> {
+            engine.changeRunning();
+            if (stopButton.getText().equals("Pause")){
+                stopButton.setText("Start");
+            }else{
+                stopButton.setText("Pause");
+            }
         });
     }
     void drawGrid(GridPane gridPane){
@@ -102,7 +111,6 @@ public class App extends Application {
                     imageView.setFitHeight(20);
                     VBox vbox = new VBox();
                     vbox.getChildren().add(imageView);
-                    vbox.setAlignment(Pos.CENTER);
                     gridPane.add(vbox,i+1,UpperRight.y +1 -j);
                     GridPane.setHalignment(vbox, HPos.CENTER);
                 }
@@ -129,11 +137,14 @@ public class App extends Application {
         }
     }
     public void updateMap(){
-        this.gridPane.getChildren().clear();
-        this.gridPane.getColumnConstraints().clear();
-        this.gridPane.getRowConstraints().clear();
-        this.gridPane.setGridLinesVisible(false);
-        drawGrid(gridPane);
+        ObservableList<Node> childrens = gridPane.getChildren();
+        ArrayList<Node> toRemove = new ArrayList<>();
+        for(Node node : childrens){
+            if(node instanceof VBox || node instanceof HBox) {
+                toRemove.add(node);
+            }
+        }
+        gridPane.getChildren().removeAll(toRemove);
         try {
             drawObjects(gridPane);
         }
@@ -147,8 +158,8 @@ public class App extends Application {
         Label numOfGrasses = new Label("number of grasses: " + statistics.numOfGrasses);
         Label numOfEmptyFields = new Label("number of empty fields: " + statistics.numOfEmptyFields);
         Label mostPopularGenes = new Label("Most popular genes: " + Arrays.toString(statistics.mostPopularGenes));
-        Label averageAnimalEnergy = new Label("number of animals: " + statistics.averageAnimalEnergy);
-        Label averageAnimalLifeSpan = new Label("number of animals: " + statistics.averageAnimalLifeSpan);
+        Label averageAnimalEnergy = new Label("average animal energy: " + statistics.averageAnimalEnergy);
+        Label averageAnimalLifeSpan = new Label("average animal lifespan: " + statistics.averageAnimalLifeSpan);
         this.stats.getChildren().addAll(numOfAnimals,numOfGrasses,numOfEmptyFields,mostPopularGenes,averageAnimalEnergy,averageAnimalLifeSpan);
     }
 }

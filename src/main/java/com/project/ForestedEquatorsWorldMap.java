@@ -22,19 +22,17 @@ public class ForestedEquatorsWorldMap implements IWorldMap {
     private final Vector2d equatorUpperRight;
     private int deadAnimals = 0;
     private int sumAnimalLifeSpan = 0;
-    private final HashMap<int[],Integer> genomeCount = new HashMap();
+    private final HashMap<int[],Integer> genomeCount = new HashMap<>();
 
     public ForestedEquatorsWorldMap(
             IMapEdge mapEdge, IGenome genome,IMutation mutation, Map<String, Integer> jsonConfiguration) {
         this.mutation = mutation;
         this.mapEdge = mapEdge;
-        this.equatorLowerLeft = new Vector2d(0,jsonConfiguration.get("height")-jsonConfiguration.get("equatorHeight"));
-        this.equatorUpperRight = new Vector2d(jsonConfiguration.get("width")-1,jsonConfiguration.get("height")-1);
+        this.equatorLowerLeft = new Vector2d(0,jsonConfiguration.get("height")/2 - jsonConfiguration.get("equatorHeight")/2);
+        this.equatorUpperRight = new Vector2d(jsonConfiguration.get("width")-1,jsonConfiguration.get("height")/2+jsonConfiguration.get("equatorHeight")/2);
         this.grassEnergy = jsonConfiguration.get("grassEnergy");
         this.grassPerDay = jsonConfiguration.get("grassPerDay");
         this.energyToCopulate = jsonConfiguration.get("energyToCopulate");
-        System.out.println(equatorLowerLeft.toString());
-        System.out.println(equatorUpperRight.toString());
         this.energyLostToCopulate = jsonConfiguration.get("energyLostToCopulate");
         this.startingEnergy = jsonConfiguration.get("startingEnergy");
         this.genomeLength = jsonConfiguration.get("genomeLength");

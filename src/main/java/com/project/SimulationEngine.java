@@ -10,14 +10,16 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Arrays;
 
-public class SimulationEngine implements IEngine {
+public class SimulationEngine implements IEngine,Runnable {
     private final IWorldMap map;
     private final int days;
+
     private final Statistics statistics;
     private final Boolean saveConfig;
     private final App app;
     FileWriter outputFile;
     CSVWriter writer;
+    private boolean running = true;
     public SimulationEngine(IWorldMap iWorldMap, Animal[] animals, int days,Boolean saveConfig, App app,Statistics statistics) {
         this.map = iWorldMap;
         this.days = days;
@@ -29,8 +31,8 @@ public class SimulationEngine implements IEngine {
         this.statistics = statistics;
         if(saveConfig){
             try {
-                String fileName = java.time.LocalDateTime.now().toString() + ".csv";
-                this.outputFile = new FileWriter(new File ("SavedStats/" + fileName));
+                String fileName = java.time.LocalDateTime.now() + ".csv";
+                this.outputFile = new FileWriter("SavedStats/" + fileName);
                 this.writer = new CSVWriter(outputFile);
                 String[] header = { "numOfAnimals", "numOfGrasses", "numOfEmptyFields","mostPopularGenes" , "averageAnimalEnergy" , "averageAnimalLifeSpan" };
                 writer.writeNext(header);
@@ -56,11 +58,22 @@ public class SimulationEngine implements IEngine {
             }
             try{
                 Thread.sleep(1000);
-                Platform.runLater( () -> this.app.updateMap());
-                Platform.runLater( () -> this.app.updateStats());
+                System.out.println(Long.toString(Runtime.getRuntime().freeMemory()) + ' ' + Long.toString(Runtime.getRuntime().totalMemory()) +' ' + Long.toString(Runtime.getRuntime().maxMemory()));
+                Platform.runLater(() -> app.updateMap());
+                Platform.runLater(() -> app.updateStats());
+
             }
             catch (InterruptedException e){
                 throw new RuntimeException(e.getMessage());
+            }
+            while (!running){
+                try {
+                    Thread.sleep(100);
+                    System.out.println(Long.toString(Runtime.getRuntime().freeMemory()) + ' ' + Long.toString(Runtime.getRuntime().totalMemory()) +' ' + Long.toString(Runtime.getRuntime().maxMemory()));
+
+                }catch (InterruptedException e){
+                    throw new RuntimeException(e.getMessage());
+                }
             }
         }
         if(saveConfig){
@@ -81,5 +94,8 @@ public class SimulationEngine implements IEngine {
                 String.valueOf(statistics.averageAnimalEnergy),
                 String.valueOf(statistics.averageAnimalLifeSpan)};
         writer.writeNext(stats);
+    }
+    public void changeRunning(){
+        running = !running;
     }
 }

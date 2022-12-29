@@ -3,11 +3,10 @@ package com.project;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.gui.App;
+import com.project.gui.Menu;
 import javafx.application.Application;
 
 import java.io.File;
-import java.io.File.*;
-import java.util.Map;
 
 public class World {
     public static void main(String[] args) {
@@ -36,6 +35,8 @@ public class World {
 //        }  catch (Exception ex) {
 //            ex.printStackTrace();
 //        }
-        Application.launch(App.class, args);
+        //Application.launch(App.class, args);
+        Application.launch(Menu.class,args);
+        System.out.println("still nuning");
     }
 }
