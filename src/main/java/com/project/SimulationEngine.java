@@ -15,7 +15,7 @@ import java.util.Date;
 public class SimulationEngine implements IEngine,Runnable {
     private final IWorldMap map;
     private final int days;
-
+    public int currDay = 0;
     private final Statistics statistics;
     private final Boolean saveConfig;
     private final App app;
@@ -51,8 +51,8 @@ public class SimulationEngine implements IEngine,Runnable {
 
     @Override
     public void run() {
-        for (int i = days; i > 0; i--) {
-            System.out.println("day "+ (days - i));
+        for (currDay=0; currDay <= days; currDay++) {
+            System.out.println("day "+ (currDay));
             map.removeDeadAnimals();
             map.moveAnimals();
             map.eatGrass();
@@ -60,13 +60,16 @@ public class SimulationEngine implements IEngine,Runnable {
             map.growGrass();
             statistics.updateStats();
             if(saveConfig){
-                saveStatsToCsv(i);
+                saveStatsToCsv(currDay);
             }
             try{
                 Thread.sleep(1000);
                 System.out.println(Long.toString(Runtime.getRuntime().freeMemory()) + ' ' + Long.toString(Runtime.getRuntime().totalMemory()) +' ' + Long.toString(Runtime.getRuntime().maxMemory()));
-                Platform.runLater(() -> app.updateMap());
-                Platform.runLater(() -> app.updateStats());
+                Platform.runLater(() -> {app.updateMap();
+                    app.updateStats();
+                    app.updatePlot(currDay);
+                });
+
 
             }
             catch (InterruptedException e){

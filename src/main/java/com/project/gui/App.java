@@ -1,12 +1,14 @@
 package com.project.gui;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.*;
 import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -14,7 +16,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.*;
@@ -22,10 +23,13 @@ public class App {
     private IWorldMap map;
     private IMapEdge edges;
     private Statistics statistics;
+    private IEngine engine;
     private final GridPane gridPane = new GridPane();
     private final VBox stats = new VBox();
+    private final XYChart.Series seriesGrass = new XYChart.Series();
+    private final XYChart.Series seriesAnimals = new XYChart.Series();
 
-
+    private LineChart lineChart;
     private int days;
     public App(Stage stage,Map<String, Integer> configuration,boolean saveStats) {
 
@@ -47,10 +51,13 @@ public class App {
             throw new RuntimeException(e);
         }
         updateStats();
-        Scene scene = new Scene(new VBox(gridPane,stats,stopButton), 600, 800);
+        createPlot();
+        lineChart.setPrefWidth(450);
+        HBox hbox = new HBox(stats,lineChart);
+        Scene scene = new Scene(new VBox(gridPane,hbox,stopButton), 600, 800);
         stage.setScene(scene);
         stage.show();
-        IEngine engine = new SimulationEngine(map, new Animal[]{}, days,saveStats,this,statistics);
+        engine = new SimulationEngine(map, new Animal[]{}, days,saveStats,this,statistics);
         Thread engineThread = new Thread(engine::run);
         engineThread.setDaemon(true); //pozwala na zatrzmyanie threaadu przy zamknięciu okna
         engineThread.start();
@@ -155,12 +162,28 @@ public class App {
     }
     public void updateStats(){
         this.stats.getChildren().clear();
-        Label numOfAnimals = new Label("number of animals: " + statistics.numOfAnimals);
-        Label numOfGrasses = new Label("number of grasses: " + statistics.numOfGrasses);
-        Label numOfEmptyFields = new Label("number of empty fields: " + statistics.numOfEmptyFields);
-        Label mostPopularGenes = new Label("Most popular genes: " + Arrays.toString(statistics.mostPopularGenes));
-        Label averageAnimalEnergy = new Label("average animal energy: " + statistics.averageAnimalEnergy);
-        Label averageAnimalLifeSpan = new Label("average animal lifespan: " + statistics.averageAnimalLifeSpan);
+        Label numOfAnimals = new Label("num of animals: " + statistics.numOfAnimals);
+        Label numOfGrasses = new Label("num of grasses: " + statistics.numOfGrasses);
+        Label numOfEmptyFields = new Label("num of empty fields: " + statistics.numOfEmptyFields);
+        Label mostPopularGenes = new Label("Most popular genes: " +"\n"+ Arrays.toString(statistics.mostPopularGenes));
+        Label averageAnimalEnergy = new Label("avg. animal energy: " + statistics.averageAnimalEnergy);
+        Label averageAnimalLifeSpan = new Label("avg. animal lifespan: " + statistics.averageAnimalLifeSpan);
         this.stats.getChildren().addAll(numOfAnimals,numOfGrasses,numOfEmptyFields,mostPopularGenes,averageAnimalEnergy,averageAnimalLifeSpan);
     }
+
+    private void createPlot(){
+        //TODO: nazwy serii
+        NumberAxis xAxis = new NumberAxis();
+        xAxis.setLabel("Day");
+        NumberAxis yAxis = new NumberAxis();
+        lineChart = new LineChart(xAxis, yAxis);
+        seriesGrass.getData().add(new XYChart.Data<>(0,statistics.numOfGrasses));
+        seriesAnimals.getData().add(new XYChart.Data<>(0,statistics.numOfAnimals));
+        lineChart.getData().addAll(seriesGrass,seriesAnimals);
+    }
+    public void updatePlot(int day){
+        seriesAnimals.getData().add(new XYChart.Data<>(day,statistics.numOfAnimals));
+        seriesGrass.getData().add(new XYChart.Data<>(day,statistics.numOfGrasses));
+    }
+
 }
