@@ -191,7 +191,7 @@ public class App {
             Label ObservedAnimalChildrens = new Label("Observed Animal Childrens: " + observedAnimal.getNumOfChildren());
             Label ObservedAnimalAge= new Label("Observed Animal Age: " + observedAnimal.getAge());
             Label ObservedAnimalDayOfDeath= new Label("Observed Animal Day Of Death: " + observedAnimal.getDayOfDeath());
-            Button stopObserving = new Button("stopObserving");
+            Button stopObserving = new Button("stopObserving (works on pause)");
             stopObserving.setOnAction(event -> {
                 this.observedAnimal = null;
                 updateStats();
@@ -219,22 +219,26 @@ public class App {
         seriesAnimals.getData().add(new XYChart.Data<>(day,statistics.numOfAnimals));
         seriesGrass.getData().add(new XYChart.Data<>(day,statistics.numOfGrasses));
     }
-    public void observeAnimal(javafx.scene.input.MouseEvent e){
+    public void observeAnimal(javafx.scene.input.MouseEvent e) {
         Node clickedNode = e.getPickResult().getIntersectedNode().getParent();
-        System.out.println(clickedNode.toString());
-        int colIndex = GridPane.getColumnIndex(clickedNode.getParent()) - 1;
-        int rowIndex = edges.getUpperRight().y + 1 - GridPane.getRowIndex(clickedNode.getParent());
-        Object object = this.map.objectAt(new Vector2d(colIndex,rowIndex));
-        int i = 0;
-        for (Node node : clickedNode.getParent().getChildrenUnmodifiable()){
-            i+=1;
-            if(node == clickedNode){
-                break;
-            }
+        if (clickedNode == null || clickedNode.getParent() == null) {
+            return;
         }
-        Animal animal = new ArrayList<>((Collection<Animal>)object).get(i-1);
-        this.observedAnimal = animal;
-        updateStats();
+        if (gridPane.getColumnIndex(clickedNode.getParent()) != null && gridPane.getRowIndex(clickedNode.getParent()) != null) {
+            int colIndex = GridPane.getColumnIndex(clickedNode.getParent()) - 1;
+            int rowIndex = edges.getUpperRight().y + 1 - GridPane.getRowIndex(clickedNode.getParent());
+            Object object = this.map.objectAt(new Vector2d(colIndex, rowIndex));
+            int i = 0;
+            for (Node node : clickedNode.getParent().getChildrenUnmodifiable()) {
+                i += 1;
+                if (node == clickedNode) {
+                    break;
+                }
+            }
+            Animal animal = new ArrayList<>((Collection<Animal>) object).get(i - 1);
+            this.observedAnimal = animal;
+            updateStats();
+        }
     }
     public void highlightMostPopularGene(String path){
         Collection<Animal> animals = map.getAnimals();
