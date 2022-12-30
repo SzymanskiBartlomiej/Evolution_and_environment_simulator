@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Semaphore;
 
 public class SimulationEngine implements IEngine,Runnable {
     private final IWorldMap map;
@@ -51,6 +53,7 @@ public class SimulationEngine implements IEngine,Runnable {
 
     @Override
     public void run() {
+
         for (currDay=0; currDay <= days; currDay++) {
             System.out.println("day "+ (currDay));
             map.removeDeadAnimals(currDay);
@@ -63,12 +66,16 @@ public class SimulationEngine implements IEngine,Runnable {
                 saveStatsToCsv(currDay);
             }
             try{
-                Thread.sleep(1000);
-                System.out.println(Long.toString(Runtime.getRuntime().freeMemory()) + ' ' + Long.toString(Runtime.getRuntime().totalMemory()) +' ' + Long.toString(Runtime.getRuntime().maxMemory()));
-                Platform.runLater(() -> {app.updateMap();
+                CountDownLatch countDownLatch=new  CountDownLatch(1);
+                System.out.println((float) Runtime.getRuntime().freeMemory()/Runtime.getRuntime().maxMemory());
+                    Platform.runLater(() -> {
+                    app.updateMap();
                     app.updateStats();
                     app.updatePlot(currDay);
+                    countDownLatch.countDown();
                 });
+                Thread.sleep(500);
+                countDownLatch.await();
 
 
             }
@@ -78,7 +85,6 @@ public class SimulationEngine implements IEngine,Runnable {
             while (!running){
                 try {
                     Thread.sleep(100);
-                    System.out.println(Long.toString(Runtime.getRuntime().freeMemory()) + ' ' + Long.toString(Runtime.getRuntime().totalMemory()) +' ' + Long.toString(Runtime.getRuntime().maxMemory()));
 
                 }catch (InterruptedException e){
                     throw new RuntimeException(e.getMessage());

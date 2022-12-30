@@ -25,6 +25,7 @@ public interface IWorldMap {
 
     Object objectAt(Vector2d position);
     Collection<Animal> getAnimals();
+    MultiMap<Vector2d, Animal> getAnimalsMultiMap();
     Collection<Grass> getGrasses();
     int getEmptyFields();
     int averageAnimalLifeSpan();

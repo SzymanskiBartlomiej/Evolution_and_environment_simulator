@@ -58,6 +58,10 @@ public class MultiMap<K, V> {
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
     }
+    public Collection<TreeSet<V>> rawValues() {
+        return map.values();
+    }
+
 
     /**
      * Returns 2 values highest for a given key, highest defined by comperator function

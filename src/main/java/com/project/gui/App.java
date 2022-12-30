@@ -2,7 +2,7 @@ package com.project.gui;
 
 import com.project.*;
 import javafx.collections.ObservableList;
-import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -12,10 +12,12 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -27,8 +29,8 @@ public class App {
     private IEngine engine;
     private final GridPane gridPane = new GridPane();
     private final VBox stats = new VBox();
-    private final XYChart.Series seriesGrass = new XYChart.Series();
-    private final XYChart.Series seriesAnimals = new XYChart.Series();
+    private final XYChart.Series<Integer,Number> seriesGrass = new XYChart.Series<>();
+    private final XYChart.Series<Integer,Number>seriesAnimals = new XYChart.Series<>();
 
     private LineChart lineChart;
     private int days;
@@ -45,7 +47,7 @@ public class App {
         }  catch (Exception ex) {
             ex.printStackTrace();
         }
-        Button stopButton = new Button("Pause");
+        ToggleButton stopButton = new ToggleButton("Pause");
         drawGrid(gridPane);
         try {
             drawObjects(gridPane);
@@ -61,11 +63,17 @@ public class App {
         stage.show();
         engine = new SimulationEngine(map, new Animal[]{}, days,saveStats,this,statistics);
         Thread engineThread = new Thread(engine::run);
-        engineThread.setDaemon(true); //pozwala na zatrzmyanie threaadu przy zamknięciu okna
+        //zatrzmyanie threaadu przy zamknięciu okna
+        stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent e) {
+                engineThread.interrupt();
+            }
+        });
         engineThread.start();
         stopButton.setOnAction(event -> {
             engine.changeRunning();
-            if (stopButton.getText().equals("Pause")){
+            if (stopButton.isSelected()){
                 highlightMostPopularGene("src/main/resources/animalHighlited.png");
                 gridPane.setDisable(false);
                 gridPane.setOnMouseClicked( ( e ) ->
@@ -113,24 +121,22 @@ public class App {
     }
     void drawObjects(GridPane gridPane) throws FileNotFoundException {
         Vector2d UpperRight = edges.getUpperRight();
-        for(int i = 0; i < UpperRight.x+1; i++) {
-            for(int j = 0; j < UpperRight.y+1; j++) {
-                Vector2d currentPosition = new Vector2d(i,j);
+        for (int i = 0; i < UpperRight.x + 1; i++) {
+            for (int j = 0; j < UpperRight.y + 1; j++) {
+                Vector2d currentPosition = new Vector2d(i, j);
                 Object object = this.map.objectAt(currentPosition);
-                if(object != null && object.getClass() == Grass.class){
-                    Image image = new Image(new FileInputStream(((Grass)object).getTexturePath()));
+                if (object != null && object.getClass() == Grass.class) {
+                    Image image = new Image(new FileInputStream(((Grass) object).getTexturePath()));
                     ImageView imageView = new ImageView(image);
                     imageView.setFitWidth(20);
                     imageView.setFitHeight(20);
-                    VBox vbox = new VBox();
-                    vbox.getChildren().add(imageView);
-                    gridPane.add(vbox,i+1,UpperRight.y +1 -j);
-                    GridPane.setHalignment(vbox, HPos.CENTER);
+                    gridPane.add(imageView, i + 1, UpperRight.y + 1 - j);
+                    GridPane.setHalignment(imageView, HPos.CENTER);
                 }
                 if (object instanceof Collection) {
-                    ArrayList <Animal> Animals = new ArrayList<>((Collection<Animal>)object);
+                    ArrayList<Animal> Animals = new ArrayList<>((Collection<Animal>) object);
                     HBox hBox = new HBox();
-                    for (Animal animal : Animals){
+                    for (Animal animal : Animals) {
                         Image image = new Image(new FileInputStream(animal.getTexturePath()));
                         ImageView imageView = new ImageView(image);
                         imageView.setFitWidth(10);
@@ -142,18 +148,19 @@ public class App {
                         hBox.getChildren().add(vbox);
                     }
                     hBox.setSpacing(2);
-                    gridPane.add(hBox,i+1,UpperRight.y +1 -j);
+                    gridPane.add(hBox, i + 1, UpperRight.y + 1 - j);
                     hBox.setAlignment(Pos.CENTER);
                     GridPane.setHalignment(hBox, HPos.CENTER);
                 }
             }
         }
     }
+
     public void updateMap(){
         ObservableList<Node> childrens = gridPane.getChildren();
         ArrayList<Node> toRemove = new ArrayList<>();
         for(Node node : childrens){
-            if(node instanceof VBox || node instanceof HBox) {
+            if(node instanceof HBox || node instanceof ImageView) {
                 toRemove.add(node);
             }
         }
@@ -200,7 +207,10 @@ public class App {
         NumberAxis xAxis = new NumberAxis();
         xAxis.setLabel("Day");
         NumberAxis yAxis = new NumberAxis();
-        lineChart = new LineChart(xAxis, yAxis);
+        lineChart = new LineChart<>(xAxis, yAxis);
+        lineChart.setLegendVisible(true);
+        seriesAnimals.setName("Number of Animals");
+        seriesGrass.setName("Number of Grass");
         seriesGrass.getData().add(new XYChart.Data<>(0,statistics.numOfGrasses));
         seriesAnimals.getData().add(new XYChart.Data<>(0,statistics.numOfAnimals));
         lineChart.getData().addAll(seriesGrass,seriesAnimals);
@@ -212,8 +222,8 @@ public class App {
     public void observeAnimal(javafx.scene.input.MouseEvent e){
         Node clickedNode = e.getPickResult().getIntersectedNode().getParent();
         System.out.println(clickedNode.toString());
-        Integer colIndex = gridPane.getColumnIndex(clickedNode.getParent()) - 1;
-        Integer rowIndex = edges.getUpperRight().y + 1 - gridPane.getRowIndex(clickedNode.getParent());
+        int colIndex = GridPane.getColumnIndex(clickedNode.getParent()) - 1;
+        int rowIndex = edges.getUpperRight().y + 1 - GridPane.getRowIndex(clickedNode.getParent());
         Object object = this.map.objectAt(new Vector2d(colIndex,rowIndex));
         int i = 0;
         for (Node node : clickedNode.getParent().getChildrenUnmodifiable()){

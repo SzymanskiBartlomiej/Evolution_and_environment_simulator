@@ -216,6 +216,9 @@ public class ForestedEquatorsWorldMap implements IWorldMap {
         // funkcja do testów
         return animals.values();
     }
+    public MultiMap<Vector2d, Animal> getAnimalsMultiMap(){
+        return animals;
+    }
     public Collection<Grass> getGrasses() {
         return grasses.values();
     }

@@ -5,7 +5,7 @@ public class Animal implements IMapElement, Comparable<Animal> {
     private Vector2d vector2d;
     int numOfChildren = 0;
     public int energy;
-    int dayOfDeath = 0;
+    int dayOfDeath;
     int age = 0;
     private final int[] genes;
     private int currentGene = 0;
