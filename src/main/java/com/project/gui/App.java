@@ -182,7 +182,7 @@ public class App {
             Label ObservedAnimalGenes = new Label("Observed Animal Genes: " + Arrays.toString(observedAnimal.getGenes()));
             Label ObservedAnimalCurrentGene = new Label("Observed Animal Current Gene: " + observedAnimal.getCurrentGene());
             Label ObservedAnimalChildrens = new Label("Observed Animal Childrens: " + observedAnimal.getNumOfChildren());
-            Label ObservedAnimalAge= new Label("Observed Animal Genes: " + observedAnimal.getAge());
+            Label ObservedAnimalAge= new Label("Observed Animal Age: " + observedAnimal.getAge());
             Label ObservedAnimalDayOfDeath= new Label("Observed Animal Day Of Death: " + observedAnimal.getDayOfDeath());
             Button stopObserving = new Button("stopObserving");
             stopObserving.setOnAction(event -> {
