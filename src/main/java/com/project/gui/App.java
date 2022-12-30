@@ -2,6 +2,7 @@ package com.project.gui;
 
 import com.project.*;
 import javafx.collections.ObservableList;
+import javafx.event.Event;
 import javafx.geometry.HPos;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -65,29 +66,17 @@ public class App {
         stopButton.setOnAction(event -> {
             engine.changeRunning();
             if (stopButton.getText().equals("Pause")){
+                highlightMostPopularGene("src/main/resources/animalHighlited.png");
                 gridPane.setDisable(false);
                 gridPane.setOnMouseClicked( ( e ) ->
                 {
-                    Node clickedNode = e.getPickResult().getIntersectedNode().getParent();
-                    System.out.println(clickedNode.toString());
-                    Integer colIndex = gridPane.getColumnIndex(clickedNode.getParent()) - 1; //x
-                    Integer rowIndex = edges.getUpperRight().y + 1 - gridPane.getRowIndex(clickedNode.getParent());
-                    Object object = this.map.objectAt(new Vector2d(colIndex,rowIndex));
-                    int i = 0;
-                    for (Node node : clickedNode.getParent().getChildrenUnmodifiable()){
-                        i+=1;
-                        if(node == clickedNode){
-                            break;
-                        }
-                    }
-                    Animal animal = new ArrayList<>((Collection<Animal>)object).get(i-1);
-                    this.observedAnimal = animal;
-                    updateStats();
+                    observeAnimal(e);
                 } );
                 stopButton.setText("Start");
             }else{
                 stopButton.setText("Pause");
                 gridPane.setDisable(true);
+                highlightMostPopularGene("src/main/resources/animal.png");
             }
         });
     }
@@ -181,7 +170,8 @@ public class App {
         Label numOfAnimals = new Label("num of animals: " + statistics.numOfAnimals);
         Label numOfGrasses = new Label("num of grasses: " + statistics.numOfGrasses);
         Label numOfEmptyFields = new Label("num of empty fields: " + statistics.numOfEmptyFields);
-        Label mostPopularGenes = new Label("Most popular genes: " +"\n"+ Arrays.toString(statistics.mostPopularGenes));
+        Label mostPopularGenes = new Label("Most popular genes: " +"\n"+ Arrays.toString(statistics.mostPopularGenes)
+                + " in " + map.getGenomeCount().get(statistics.mostPopularGenes) + " animals");
         Label averageAnimalEnergy = new Label("avg. animal energy: " + statistics.averageAnimalEnergy);
         Label averageAnimalLifeSpan = new Label("avg. animal lifespan: " + statistics.averageAnimalLifeSpan);
         if(observedAnimal == null){
@@ -219,5 +209,30 @@ public class App {
         seriesAnimals.getData().add(new XYChart.Data<>(day,statistics.numOfAnimals));
         seriesGrass.getData().add(new XYChart.Data<>(day,statistics.numOfGrasses));
     }
-
+    public void observeAnimal(javafx.scene.input.MouseEvent e){
+        Node clickedNode = e.getPickResult().getIntersectedNode().getParent();
+        System.out.println(clickedNode.toString());
+        Integer colIndex = gridPane.getColumnIndex(clickedNode.getParent()) - 1;
+        Integer rowIndex = edges.getUpperRight().y + 1 - gridPane.getRowIndex(clickedNode.getParent());
+        Object object = this.map.objectAt(new Vector2d(colIndex,rowIndex));
+        int i = 0;
+        for (Node node : clickedNode.getParent().getChildrenUnmodifiable()){
+            i+=1;
+            if(node == clickedNode){
+                break;
+            }
+        }
+        Animal animal = new ArrayList<>((Collection<Animal>)object).get(i-1);
+        this.observedAnimal = animal;
+        updateStats();
+    }
+    public void highlightMostPopularGene(String path){
+        Collection<Animal> animals = map.getAnimals();
+        int[] mostPopularGenes = statistics.mostPopularGenes;
+        for (Animal animal : animals){
+            if(animal.getGenes() == mostPopularGenes){
+                animal.setTexturePath(path);
+            }
+        }
+    }
 }

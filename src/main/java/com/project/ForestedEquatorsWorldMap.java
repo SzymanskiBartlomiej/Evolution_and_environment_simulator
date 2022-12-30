@@ -43,7 +43,6 @@ public class ForestedEquatorsWorldMap implements IWorldMap {
         Random rand = new Random();
         for (int i = 0; i < jsonConfiguration.get("startingGrassNum"); i++) {
             Vector2d grassPosition;
-            // losowanie trawy na tym równiku nie ma sensu bo jak zostało tylko 1 pole to trwa to w nieskończoność??
             if (emptyEquatorFields > 0 && rand.nextInt(10) + 1 > 2) {
                 do {
                     int x = rand.nextInt(equatorUpperRight.x - equatorLowerLeft.x+1) + equatorLowerLeft.x;
@@ -85,7 +84,6 @@ public class ForestedEquatorsWorldMap implements IWorldMap {
         Random rand = new Random();
         for (int i = 0; i < grassPerDay; i++) {
             Vector2d grassPosition;
-            // losowanie trawy na tym równiku nie ma sensu bo jak zostało tylko 1 pole to trwa to w nieskończoność??
             if (emptyEquatorFields > 0 && rand.nextInt(10) + 1 > 2) {
                 do {
                     int x = rand.nextInt(equatorUpperRight.x - equatorLowerLeft.x+1) + equatorLowerLeft.x;
@@ -107,8 +105,6 @@ public class ForestedEquatorsWorldMap implements IWorldMap {
 
     @Override
     public void moveAnimals() {
-        /// TODO: observer do animals (multimap)
-
         for (Animal animal : animals.values()) {
             animals.remove(animal.getPosition(), animal);
 
@@ -129,6 +125,7 @@ public class ForestedEquatorsWorldMap implements IWorldMap {
                 deadAnimals+=1;
                 sumAnimalLifeSpan+=animal.age;
                 animals.remove(animal.getPosition(), animal);
+                genomeCount.put(animal.getGenes(), genomeCount.get(animal.getGenes()) - 1);
             }
         }
     }

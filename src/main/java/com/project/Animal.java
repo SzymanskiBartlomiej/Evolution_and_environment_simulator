@@ -9,6 +9,7 @@ public class Animal implements IMapElement, Comparable<Animal> {
     int age = 0;
     private final int[] genes;
     private int currentGene = 0;
+    private String texturePath = "src/main/resources/animal.png";
 
     public Animal(Vector2d vector2d, int[] genes, int startingEnergy) {
         this.vector2d = vector2d;
@@ -72,11 +73,15 @@ public class Animal implements IMapElement, Comparable<Animal> {
 
     @Override
     public String getTexturePath() {
-        return "src/main/resources/animal.png";
+        return texturePath;
     }
 
     @Override
     public int compareTo(Animal other) {
         return 0;
+    }
+
+    public void setTexturePath(String texturePath) {
+        this.texturePath = texturePath;
     }
 }
